@@ -44,6 +44,9 @@ class ASquadCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* AimAction;
 
+	UFUNCTION(BlueprintCallable)
+	bool GetIsAiming();
+
 public:
 	ASquadCharacter();
 	
@@ -56,7 +59,11 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 			
+	/** Called for aiming input */
+	void Aim();
+	void StopAiming();
 
+	bool IsAiming;
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

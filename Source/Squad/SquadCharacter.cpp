@@ -16,7 +16,7 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 //////////////////////////////////////////////////////////////////////////
 // ASquadCharacter
 
-ASquadCharacter::ASquadCharacter()
+ASquadCharacter::ASquadCharacter() : IsAiming(false)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -82,8 +82,8 @@ void ASquadCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Look);
 
 		//Aiming
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &ASquadCharacter::Aim);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &ASquadCharacter::StopAiming);
 	}
 	else
 	{
@@ -125,4 +125,16 @@ void ASquadCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void ASquadCharacter::Aim() {
+	IsAiming = true;
+}
+
+void ASquadCharacter::StopAiming() {
+	IsAiming = false;
+}
+
+bool ASquadCharacter::GetIsAiming() {
+	return IsAiming;
 }
