@@ -20,12 +20,7 @@ ASquadCharacter::ASquadCharacter() : IsAiming(false)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-		
-	// Don't rotate when the controller rotates. Let that just affect the camera.
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
-
+	
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
@@ -42,7 +37,7 @@ ASquadCharacter::ASquadCharacter() : IsAiming(false)
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(RootComponent);
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	FollowCamera->bUsePawnControlRotation = true; // Camera does not rotate relative to arm
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -129,10 +124,12 @@ void ASquadCharacter::Look(const FInputActionValue& Value)
 
 void ASquadCharacter::Aim() {
 	IsAiming = true;
+	GetCharacterMovement()->MaxWalkSpeed = 250.f;
 }
 
 void ASquadCharacter::StopAiming() {
 	IsAiming = false;
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 }
 
 bool ASquadCharacter::GetIsAiming() {
