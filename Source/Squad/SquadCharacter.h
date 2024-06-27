@@ -47,6 +47,9 @@ class ASquadCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = Gun)
+	TSubclassOf<class AGun> GunDefault;
+
 	UFUNCTION(BlueprintCallable)
 	bool GetIsAiming();
 
@@ -70,6 +73,8 @@ protected:
 	void Interact();
 
 	bool IsAiming;
+
+	TObjectPtr<AGun> CurGun;
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

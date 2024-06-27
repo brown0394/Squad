@@ -2,6 +2,7 @@
 
 
 #include "Gun.h"
+#include "Projectile.h"
 
 AGun::AGun() {
 

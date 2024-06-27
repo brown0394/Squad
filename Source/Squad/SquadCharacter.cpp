@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Gun.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -38,7 +39,7 @@ ASquadCharacter::ASquadCharacter() : IsAiming(false)
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(RootComponent);
 	FollowCamera->bUsePawnControlRotation = true; // Camera does not rotate relative to arm
-
+	
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
@@ -47,6 +48,12 @@ void ASquadCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+	TObjectPtr<UWorld> const World = GetWorld();
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	CurGun = World->SpawnActor<AGun>(GunDefault, ActorSpawnParams);
+	CurGun->AttachWeapon(this);
+
 
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))

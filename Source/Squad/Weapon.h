@@ -15,5 +15,5 @@ public:
 	// Sets default values for this actor's properties
 	AWeapon();
 	virtual void DoAttack() PURE_VIRTUAL(AWeapon::DoAttack, ;);
-
+	void AttachWeapon(TObjectPtr<class ASquadCharacter> TargetCharacter);
 };
