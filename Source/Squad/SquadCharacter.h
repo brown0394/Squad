@@ -50,8 +50,7 @@ class ASquadCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* UseWeaponAction;
 
-	UPROPERTY(EditDefaultsOnly, Category = Gun)
-	TSubclassOf<class AGun> GunDefault;
+
 
 	UFUNCTION(BlueprintCallable)
 	bool GetIsAiming();
@@ -61,6 +60,8 @@ public:
 	
 
 protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Gun")
+	TSubclassOf<class AGun> GunToSpawn;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
@@ -80,7 +81,7 @@ protected:
 
 	bool IsAiming;
 
-	TObjectPtr<AGun> CurGun;
+	TObjectPtr<class AGun> CurGun;
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

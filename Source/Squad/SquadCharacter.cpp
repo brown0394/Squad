@@ -49,12 +49,9 @@ void ASquadCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 	TObjectPtr<UWorld> const World = GetWorld();
-	FActorSpawnParameters ActorSpawnParams;
-	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-	CurGun = World->SpawnActor<AGun>(GunDefault, ActorSpawnParams);
+	CurGun = World->SpawnActor<AGun>(GunToSpawn, FVector::ZeroVector, FRotator::ZeroRotator);
+	CurGun->SetActorEnableCollision(false);
 	CurGun->AttachWeapon(this);
-
-
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -157,13 +154,14 @@ bool ASquadCharacter::GetIsAiming() {
 
 void ASquadCharacter::Interact() {
 	FHitResult Hit;
-	FVector TraceStart = GetActorLocation();
-	FVector TraceEnd = GetActorLocation() + GetActorForwardVector() * 1000.0f;
+	
+	FVector TraceStart = GetActorLocation() + (GetActorUpVector() * BaseEyeHeight);
+	FVector TraceEnd = GetActorLocation() + FollowCamera->GetForwardVector() * 200.0f;
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
 	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Pawn, QueryParams);
 
-	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 10.0f);
+	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 3.0f);
 	UE_LOG(LogTemp, Log, TEXT("Tracing line: %s to %s"), *TraceStart.ToCompactString(), *TraceEnd.ToCompactString());
 
 	// If the trace hit something, bBlockingHit will be true,
@@ -175,5 +173,7 @@ void ASquadCharacter::Interact() {
 	else {
 		UE_LOG(LogTemp, Log, TEXT("No Actors were hit"));
 	}
+	//FActorSpawnParameters ActorSpawnParams;
+	//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 }
 
