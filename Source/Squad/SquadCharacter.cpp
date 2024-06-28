@@ -87,8 +87,11 @@ void ASquadCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &ASquadCharacter::Aim);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &ASquadCharacter::StopAiming);
 
-		// Looking
+		// Interacting
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Interact);
+
+		// Using Weapon
+		EnhancedInputComponent->BindAction(UseWeaponAction, ETriggerEvent::Triggered, this, &ASquadCharacter::UseWeapon);
 	}
 	else
 	{
@@ -142,6 +145,12 @@ void ASquadCharacter::StopAiming() {
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 }
 
+void ASquadCharacter::UseWeapon() {
+	if (CurGun == nullptr) return;
+
+	CurGun->DoAttack();
+}
+
 bool ASquadCharacter::GetIsAiming() {
 	return IsAiming;
 }
@@ -167,3 +176,4 @@ void ASquadCharacter::Interact() {
 		UE_LOG(LogTemp, Log, TEXT("No Actors were hit"));
 	}
 }
+

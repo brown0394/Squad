@@ -47,6 +47,9 @@ class ASquadCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* UseWeaponAction;
+
 	UPROPERTY(EditDefaultsOnly, Category = Gun)
 	TSubclassOf<class AGun> GunDefault;
 
@@ -69,8 +72,11 @@ protected:
 	void Aim();
 	void StopAiming();
 
-	/** Called for Interact input */
+	/** Called for interacting input */
 	void Interact();
+
+	/** Called for use weapon input */
+	void UseWeapon();
 
 	bool IsAiming;
 
