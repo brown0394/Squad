@@ -5,28 +5,23 @@
 #include "Projectile.h"
 
 AGun::AGun() {
-
+	
 }
 
 void AGun::DoAttack() {
 	// Try and fire a projectile
 	if (Bullet != nullptr)
 	{
-		/*
 		UWorld* const World = GetWorld();
-		if (World != nullptr)
+		if (World != nullptr && SM != nullptr)
 		{
-			APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
-			const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
-			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-			const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
-
+			FTransform muzzle = SM->GetSocketTransform(FName(TEXT("b_gun_muzzleflash")));
 			//Set Spawn Collision Handling Override
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
 			// Spawn the projectile at the muzzle
-			World->SpawnActor<AProjectile>(Bullet, SpawnLocation, SpawnRotation, ActorSpawnParams);
-		}*/
+			World->SpawnActor<AProjectile>(Bullet, muzzle, ActorSpawnParams);
+		}
 	}
 }

@@ -16,4 +16,7 @@ public:
 	AWeapon();
 	virtual void DoAttack() PURE_VIRTUAL(AWeapon::DoAttack, ;);
 	void AttachWeapon(TObjectPtr<class ASquadCharacter> TargetCharacter);
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<UStaticMeshComponent> SM;
 };

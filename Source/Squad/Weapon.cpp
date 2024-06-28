@@ -7,7 +7,7 @@
 // Sets default values
 AWeapon::AWeapon()
 {
-
+	SM = CreateDefaultSubobject<UStaticMeshComponent>("DefaultMesh");
 }
 
 void AWeapon::AttachWeapon(TObjectPtr<ASquadCharacter> TargetCharacter) {
