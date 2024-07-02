@@ -17,16 +17,13 @@ class SQUAD_API AGun : public AWeapon
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = Gun)
 	TSubclassOf<class AProjectile> Bullet;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gun)
+	int ammo;
 
 public:
 	AGun();
 	virtual void DoAttack() override;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gun)
-	int ammo;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gun)
-	int damage;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Gun)
-	float fireRate;
+
 private:
 	//bool bMalFunction;
 };

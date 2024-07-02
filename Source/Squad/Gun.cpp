@@ -9,19 +9,21 @@ AGun::AGun() {
 }
 
 void AGun::DoAttack() {
+	
 	// Try and fire a projectile
-	if (Bullet != nullptr)
+	if (Bullet != nullptr && timeSinceLastAttack >= attackRate)
 	{
+		timeSinceLastAttack = 0.0f;
 		UWorld* const World = GetWorld();
 		if (World != nullptr && SM != nullptr)
 		{
-			FTransform muzzle = SM->GetSocketTransform(FName(TEXT("b_gun_muzzleflash")));
+			FVector muzzleLoc = SM->GetSocketLocation(FName(TEXT("MuzzleSocket")));
 			//Set Spawn Collision Handling Override
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
+			FRotator rotation = ((GetActorRightVector() * 10000) - muzzleLoc).Rotation();
 			// Spawn the projectile at the muzzle
-			World->SpawnActor<AProjectile>(Bullet, muzzle, ActorSpawnParams);
+			World->SpawnActor<AProjectile>(Bullet, (muzzleLoc + GetActorRightVector() * 10.0f), rotation, ActorSpawnParams);
 		}
 	}
 }

@@ -5,8 +5,9 @@
 #include "SquadCharacter.h"
 
 // Sets default values
-AWeapon::AWeapon()
+AWeapon::AWeapon() : timeSinceLastAttack(0.0f)
 {
+	PrimaryActorTick.bCanEverTick = true;
 	SM = CreateDefaultSubobject<UStaticMeshComponent>("DefaultMesh");
 }
 
@@ -19,4 +20,10 @@ void AWeapon::AttachWeapon(TObjectPtr<ASquadCharacter> TargetCharacter) {
 		AttachToComponent(skeletalMC, AttachmentRules, FName(TEXT("hand_r_rifle")));
 	}
 	
+}
+
+void AWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	timeSinceLastAttack += DeltaTime;
 }

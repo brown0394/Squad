@@ -16,7 +16,15 @@ public:
 	AWeapon();
 	virtual void DoAttack() PURE_VIRTUAL(AWeapon::DoAttack, ;);
 	void AttachWeapon(TObjectPtr<class ASquadCharacter> TargetCharacter);
+	virtual void Tick(float DeltaTime) override;
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> SM;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	int damage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	float attackRate;
+
+	float timeSinceLastAttack;
 };
