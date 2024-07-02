@@ -37,7 +37,11 @@ ASquadCharacter::ASquadCharacter() : IsAiming(false)
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(RootComponent);
+	TObjectPtr<USkeletalMeshComponent> skeletalMC = this->GetComponentByClass<USkeletalMeshComponent>();
+	if (skeletalMC != NULL) {
+		FollowCamera->SetupAttachment(skeletalMC, FName(TEXT("headSocket")));
+	}
+	//FollowCamera->SetupAttachment(RootComponent);
 	FollowCamera->bUsePawnControlRotation = true; // Camera does not rotate relative to arm
 	
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
