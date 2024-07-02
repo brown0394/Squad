@@ -21,7 +21,7 @@ void AGun::DoAttack() {
 			//Set Spawn Collision Handling Override
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-			FRotator rotation = ((GetActorRightVector() * 10000) - muzzleLoc).Rotation();
+			FRotator rotation = GetActorRightVector().Rotation();
 			// Spawn the projectile at the muzzle
 			World->SpawnActor<AProjectile>(Bullet, (muzzleLoc + GetActorRightVector() * 10.0f), rotation, ActorSpawnParams);
 		}
