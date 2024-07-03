@@ -54,7 +54,6 @@ void ASquadCharacter::BeginPlay()
 	Super::BeginPlay();
 	TObjectPtr<UWorld> const World = GetWorld();
 	CurGun = World->SpawnActor<AGun>(GunToSpawn, FVector::ZeroVector, FRotator::ZeroRotator);
-	CurGun->SetActorEnableCollision(false);
 	CurGun->AttachWeapon(this);
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -138,6 +137,7 @@ void ASquadCharacter::Look(const FInputActionValue& Value)
 
 void ASquadCharacter::Aim() {
 	IsAiming = true;
+	
 	GetCharacterMovement()->MaxWalkSpeed = 250.f;
 }
 
@@ -148,7 +148,6 @@ void ASquadCharacter::StopAiming() {
 
 void ASquadCharacter::UseWeapon() {
 	if (CurGun == nullptr) return;
-
 	CurGun->DoAttack();
 }
 
@@ -168,14 +167,16 @@ void ASquadCharacter::Interact() {
 	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 3.0f);
 	UE_LOG(LogTemp, Log, TEXT("Tracing line: %s to %s"), *TraceStart.ToCompactString(), *TraceEnd.ToCompactString());
 
-	// If the trace hit something, bBlockingHit will be true,
-	// and its fields will be filled with detailed info about what was hit
-	if (Hit.bBlockingHit && IsValid(Hit.GetActor()))
-	{
-		UE_LOG(LogTemp, Log, TEXT("Trace hit actor: %s"), *Hit.GetActor()->GetName());
-	}
-	else {
-		UE_LOG(LogTemp, Log, TEXT("No Actors were hit"));
+	TObjectPtr<AGun> GunToPick = Cast<AGun>(Hit.GetActor());
+	if (GunToPick != nullptr) {
+		TObjectPtr<UWorld> const World = GetWorld();
+		World->SpawnActor<AGun>(GunToSpawn, GetActorLocation() + (GetActorForwardVector() * 20), FRotator::ZeroRotator);
+		if (CurGun != nullptr) {
+			CurGun->Destroy();
+		}
+		CurGun = GunToPick;
+		CurGun->AttachWeapon(this);
+		
 	}
 	//FActorSpawnParameters ActorSpawnParams;
 	//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;

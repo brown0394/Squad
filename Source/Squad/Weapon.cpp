@@ -9,6 +9,8 @@ AWeapon::AWeapon() : timeSinceLastAttack(0.0f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SM = CreateDefaultSubobject<UStaticMeshComponent>("DefaultMesh");
+	SetActorEnableCollision(true);
+	SM->SetSimulatePhysics(true);
 }
 
 void AWeapon::AttachWeapon(TObjectPtr<ASquadCharacter> TargetCharacter) {
@@ -17,6 +19,8 @@ void AWeapon::AttachWeapon(TObjectPtr<ASquadCharacter> TargetCharacter) {
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	TObjectPtr<USkeletalMeshComponent> skeletalMC = TargetCharacter->GetComponentByClass<USkeletalMeshComponent>();
 	if (skeletalMC != NULL) {
+		SetActorEnableCollision(false);
+		SM->SetSimulatePhysics(false);
 		AttachToComponent(skeletalMC, AttachmentRules, FName(TEXT("hand_r_rifle")));
 	}
 	
