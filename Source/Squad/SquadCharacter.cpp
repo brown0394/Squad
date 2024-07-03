@@ -158,8 +158,8 @@ bool ASquadCharacter::GetIsAiming() {
 void ASquadCharacter::Interact() {
 	FHitResult Hit;
 	
-	FVector TraceStart = GetActorLocation() + (GetActorUpVector() * BaseEyeHeight);
-	FVector TraceEnd = GetActorLocation() + FollowCamera->GetForwardVector() * 200.0f;
+	FVector TraceStart = FollowCamera->GetComponentLocation();
+	FVector TraceEnd = TraceStart + FollowCamera->GetForwardVector() * 200.0f;
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
 	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Pawn, QueryParams);
