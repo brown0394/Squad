@@ -46,6 +46,15 @@ ASquadCharacter::ASquadCharacter() : IsAiming(false)
 	
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	auto montage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("AnimMontage'/Game/Characters/Mannequins/Animations/FPS/Fire_Rifle_Hip_Montage.Fire_Rifle_Hip_Montage'"));
+	if (montage.Object != nullptr) {
+		ShootAnimIdle = montage.Object;
+	}
+	montage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("AnimMontage'/Game/Characters/Mannequins/Animations/FPS/Fire_Rifle_Ironsights_Montage.Fire_Rifle_Ironsights_Montage'"));
+	if (montage.Object != nullptr) {
+		ShootAnimIronsight = montage.Object;
+	}
 }
 
 void ASquadCharacter::BeginPlay()
@@ -147,7 +156,9 @@ void ASquadCharacter::StopAiming() {
 }
 
 void ASquadCharacter::UseWeapon() {
-	if (CurGun == nullptr) return;
+	if (CurGun == nullptr || !CurGun->IsReadyToAttack()) return;
+	if (IsAiming) PlayAnimMontage(ShootAnimIronsight);
+	else PlayAnimMontage(ShootAnimIdle);
 	CurGun->DoAttack();
 }
 
@@ -169,14 +180,13 @@ void ASquadCharacter::Interact() {
 
 	TObjectPtr<AGun> GunToPick = Cast<AGun>(Hit.GetActor());
 	if (GunToPick != nullptr) {
-		TObjectPtr<UWorld> const World = GetWorld();
-		World->SpawnActor<AGun>(GunToSpawn, GetActorLocation() + (GetActorForwardVector() * 20), FRotator::ZeroRotator);
 		if (CurGun != nullptr) {
+			TObjectPtr<UWorld> const World = GetWorld();
+			World->SpawnActor<AGun>(CurGun.GetClass(), GetActorLocation() + (GetActorForwardVector() * 20), FRotator::ZeroRotator);
 			CurGun->Destroy();
 		}
 		CurGun = GunToPick;
 		CurGun->AttachWeapon(this);
-		
 	}
 	//FActorSpawnParameters ActorSpawnParams;
 	//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;

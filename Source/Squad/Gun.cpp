@@ -11,7 +11,7 @@ AGun::AGun() {
 void AGun::DoAttack() {
 	
 	// Try and fire a projectile
-	if (Bullet != nullptr && timeSinceLastAttack >= attackRate)
+	if (Bullet != nullptr && IsReadyToAttack())
 	{
 		timeSinceLastAttack = 0.0f;
 		UWorld* const World = GetWorld();
@@ -23,7 +23,7 @@ void AGun::DoAttack() {
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 			FRotator rotation = GetActorRightVector().Rotation();
 			// Spawn the projectile at the muzzle
-			World->SpawnActor<AProjectile>(Bullet, (muzzleLoc + GetActorRightVector() * 100.0f), rotation, ActorSpawnParams);
+			World->SpawnActor<AProjectile>(Bullet, muzzleLoc, rotation, ActorSpawnParams);
 		}
 	}
 }

@@ -82,6 +82,9 @@ protected:
 	bool IsAiming;
 
 	TObjectPtr<class AGun> CurGun;
+
+	TObjectPtr<UAnimMontage> ShootAnimIronsight;
+	TObjectPtr<UAnimMontage> ShootAnimIdle;
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

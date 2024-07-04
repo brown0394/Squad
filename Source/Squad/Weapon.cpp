@@ -31,3 +31,7 @@ void AWeapon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	timeSinceLastAttack += DeltaTime;
 }
+
+bool AWeapon::IsReadyToAttack() {
+	return timeSinceLastAttack >= attackRate;
+}
