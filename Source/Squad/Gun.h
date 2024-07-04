@@ -17,9 +17,14 @@ class SQUAD_API AGun : public AWeapon
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = Gun)
 	TSubclassOf<class AProjectile> Bullet;
+	UPROPERTY(EditDefaultsOnly, Category = Gun)
+	TObjectPtr<UParticleSystem> ShootParticleSystem;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gun)
-	int ammo;
+	int Ammo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gun)
+	float ParticleSize;
 
+	virtual void BeginPlay() override;
 public:
 	AGun();
 	virtual void DoAttack() override;
