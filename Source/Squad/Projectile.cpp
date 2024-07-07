@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -39,9 +40,9 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
 	{
-		if (OtherComp->IsSimulatingPhysics())
-			OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
+		if (ProjectileParticleSystem != nullptr) {
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ProjectileParticleSystem, GetActorLocation());
+		}
 		Destroy();
 	}
 }

@@ -24,6 +24,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gun)
 	float ParticleSize;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gun)
+	FRotator ParticleRotation;
+
 	virtual void BeginPlay() override;
 public:
 	AGun();

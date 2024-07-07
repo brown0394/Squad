@@ -21,6 +21,15 @@ class SQUAD_API AProjectile : public AActor
 	/** Projectile movement component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	UProjectileMovementComponent* ProjectileMovement;
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	TObjectPtr<UParticleSystem> ProjectileParticleSystem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile)
+	float ParticleSize;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile)
+	FRotator ParticleRotation;
 
 public:	
 	// Sets default values for this actor's properties
