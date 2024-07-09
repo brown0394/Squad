@@ -182,7 +182,9 @@ void ASquadCharacter::Interact() {
 	if (GunToPick != nullptr) {
 		if (CurGun != nullptr) {
 			TObjectPtr<UWorld> const World = GetWorld();
+			TObjectPtr<AGun> spawned =
 			World->SpawnActor<AGun>(CurGun.GetClass(), GetActorLocation() + (GetActorForwardVector() * 20), FRotator::ZeroRotator);
+			spawned->SetBulletsLeft(CurGun->GetBulletsLeft());
 			CurGun->Destroy();
 		}
 		CurGun = GunToPick;

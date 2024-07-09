@@ -32,6 +32,10 @@ public:
 	AGun();
 	virtual void DoAttack() override;
 
+	int GetBulletsLeft();
+	void SetBulletsLeft(int bullets);
+
 private:
 	//bool bMalFunction;
+	int curBulletsLeft;
 };

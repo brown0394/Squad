@@ -11,6 +11,7 @@ AGun::AGun() {
 
 void AGun::BeginPlay() {
 	Super::BeginPlay();
+	curBulletsLeft = Ammo;
 }
 
 void AGun::DoAttack() {
@@ -20,7 +21,7 @@ void AGun::DoAttack() {
 	{
 		timeSinceLastAttack = 0.0f;
 		UWorld* const World = GetWorld();
-		if (World != nullptr && SM != nullptr)
+		if (World != nullptr && SM != nullptr && curBulletsLeft >= 0)
 		{
 			FVector muzzleLoc = SM->GetSocketLocation(FName(TEXT("MuzzleSocket")));
 			//Set Spawn Collision Handling Override
@@ -30,6 +31,15 @@ void AGun::DoAttack() {
 			// Spawn the projectile at the muzzle
 			UGameplayStatics::SpawnEmitterAttached(ShootParticleSystem, SM, FName(TEXT("MuzzleSocket")), FVector::ZeroVector, ParticleRotation, FVector(ParticleSize));
 			World->SpawnActor<AProjectile>(Bullet, muzzleLoc, rotation, ActorSpawnParams);
+			--curBulletsLeft;
 		}
 	}
+}
+
+int AGun::GetBulletsLeft() {
+	return curBulletsLeft;
+}
+
+void AGun::SetBulletsLeft(int bullets) {
+	curBulletsLeft = bullets;
 }
