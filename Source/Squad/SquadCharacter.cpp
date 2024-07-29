@@ -156,10 +156,11 @@ void ASquadCharacter::StopAiming() {
 }
 
 void ASquadCharacter::UseWeapon() {
-	if (CurGun == nullptr || !CurGun->IsReadyToAttack()) return;
-	if (IsAiming) PlayAnimMontage(ShootAnimIronsight);
-	else PlayAnimMontage(ShootAnimIdle);
-	CurGun->DoAttack();
+	if (CurGun == nullptr) return;
+	if (CurGun->DoAttack()) {
+		if (IsAiming) PlayAnimMontage(ShootAnimIronsight);
+		else PlayAnimMontage(ShootAnimIdle);
+	}
 }
 
 bool ASquadCharacter::GetIsAiming() {

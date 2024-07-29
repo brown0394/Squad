@@ -14,7 +14,7 @@ class SQUAD_API AWeapon : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AWeapon();
-	virtual void DoAttack() PURE_VIRTUAL(AWeapon::DoAttack, ;);
+	virtual bool DoAttack() PURE_VIRTUAL(AWeapon::DoAttack, return true;);
 	void AttachWeapon(TObjectPtr<class ASquadCharacter> TargetCharacter);
 	virtual void Tick(float DeltaTime) override;
 	bool IsReadyToAttack();

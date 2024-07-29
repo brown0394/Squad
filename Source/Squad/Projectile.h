@@ -9,6 +9,7 @@
 
 class USphereComponent;
 class UProjectileMovementComponent;
+
 UCLASS()
 class SQUAD_API AProjectile : public AActor
 {

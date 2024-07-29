@@ -9,6 +9,7 @@
 /**
  * 
  */
+
 UCLASS()
 class SQUAD_API AGun : public AWeapon
 {
@@ -30,7 +31,7 @@ protected:
 	virtual void BeginPlay() override;
 public:
 	AGun();
-	virtual void DoAttack() override;
+	virtual bool DoAttack() override;
 
 	int GetBulletsLeft();
 	void SetBulletsLeft(int bullets);

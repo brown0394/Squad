@@ -4,6 +4,7 @@
 #include "Gun.h"
 #include "Projectile.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/Character.h"
 
 AGun::AGun() {
 	
@@ -14,7 +15,7 @@ void AGun::BeginPlay() {
 	curBulletsLeft = Ammo;
 }
 
-void AGun::DoAttack() {
+bool AGun::DoAttack() {
 	
 	// Try and fire a projectile
 	if (Bullet != nullptr && IsReadyToAttack())
@@ -32,8 +33,10 @@ void AGun::DoAttack() {
 			UGameplayStatics::SpawnEmitterAttached(ShootParticleSystem, SM, FName(TEXT("MuzzleSocket")), FVector::ZeroVector, ParticleRotation, FVector(ParticleSize));
 			World->SpawnActor<AProjectile>(Bullet, muzzleLoc, rotation, ActorSpawnParams);
 			--curBulletsLeft;
+			return true;
 		}
 	}
+	return false;
 }
 
 int AGun::GetBulletsLeft() {
