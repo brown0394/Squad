@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "ECaliberType.h"
 #include "SquadCharacter.generated.h"
+
+
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -14,6 +17,15 @@ class UInputAction;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
+
+USTRUCT(BlueprintType)
+struct FBulletArr
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<int32> innerArray;
+};
 
 UCLASS(config=Game)
 class ASquadCharacter : public ACharacter
@@ -62,6 +74,9 @@ public:
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Gun")
 	TSubclassOf<class AGun> GunToSpawn;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Gun")
+	TMap<ECaliberType, FBulletArr> Magazines;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
@@ -78,6 +93,8 @@ protected:
 
 	/** Called for use weapon input */
 	void UseWeapon();
+
+	void Reload();
 
 	bool IsAiming;
 

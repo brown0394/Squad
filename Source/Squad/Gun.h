@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Weapon.h"
+#include "ECaliberType.h"
 #include "Gun.generated.h"
+
 
 /**
  * 
@@ -28,6 +30,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gun)
 	FRotator ParticleRotation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gun)
+	ECaliberType btype;
+
 	virtual void BeginPlay() override;
 public:
 	AGun();
@@ -35,7 +40,7 @@ public:
 
 	int GetBulletsLeft();
 	void SetBulletsLeft(int bullets);
-
+	ECaliberType GetBulletType();
 private:
 	//bool bMalFunction;
 	int curBulletsLeft;

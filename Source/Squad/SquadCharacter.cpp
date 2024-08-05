@@ -195,3 +195,9 @@ void ASquadCharacter::Interact() {
 	//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 }
 
+void ASquadCharacter::Reload() {
+	if (CurGun == nullptr) return;
+	if (Magazines[CurGun->GetBulletType()].innerArray.Num() > 0) {
+
+	}
+}

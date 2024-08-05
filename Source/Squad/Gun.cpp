@@ -46,3 +46,7 @@ int AGun::GetBulletsLeft() {
 void AGun::SetBulletsLeft(int bullets) {
 	curBulletsLeft = bullets;
 }
+
+ECaliberType AGun::GetBulletType() {
+	return btype;
+}
