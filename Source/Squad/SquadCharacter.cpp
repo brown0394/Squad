@@ -17,7 +17,7 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 //////////////////////////////////////////////////////////////////////////
 // ASquadCharacter
 
-ASquadCharacter::ASquadCharacter() : IsAiming(false)
+ASquadCharacter::ASquadCharacter() : IsAiming(false), IsAttacking(false)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -54,6 +54,10 @@ ASquadCharacter::ASquadCharacter() : IsAiming(false)
 	montage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("AnimMontage'/Game/Characters/Mannequins/Animations/FPS/Fire_Rifle_Ironsights_Montage.Fire_Rifle_Ironsights_Montage'"));
 	if (montage.Object != nullptr) {
 		ShootAnimIronsight = montage.Object;
+	}
+	montage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("AnimMontage'/Game/Characters/Mannequins/Animations/FPS/Reload_Rifle_Ironsights.Reload_Rifle_Ironsights'"));
+	if (montage.Object != nullptr) {
+		ReloadAnimIronsight = montage.Object;
 	}
 }
 
@@ -101,6 +105,9 @@ void ASquadCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 		// Using Weapon
 		EnhancedInputComponent->BindAction(UseWeaponAction, ETriggerEvent::Triggered, this, &ASquadCharacter::UseWeapon);
+		EnhancedInputComponent->BindAction(UseWeaponAction, ETriggerEvent::Completed, this, &ASquadCharacter::EndUseWeapon);
+		// Using Reloading
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Reload);
 	}
 	else
 	{
@@ -158,13 +165,23 @@ void ASquadCharacter::StopAiming() {
 void ASquadCharacter::UseWeapon() {
 	if (CurGun == nullptr) return;
 	if (CurGun->DoAttack()) {
-		if (IsAiming) PlayAnimMontage(ShootAnimIronsight);
-		else PlayAnimMontage(ShootAnimIdle);
+		IsAttacking = true;
+		//if (IsAiming) PlayAnimMontage(ShootAnimIronsight);
+		//else PlayAnimMontage(ShootAnimIdle);
 	}
+	else IsAttacking = false;
+}
+
+void ASquadCharacter::EndUseWeapon() {
+	IsAttacking = false;
 }
 
 bool ASquadCharacter::GetIsAiming() {
 	return IsAiming;
+}
+
+bool ASquadCharacter::GetIsAttacking() {
+	return IsAttacking;
 }
 
 void ASquadCharacter::Interact() {
@@ -197,7 +214,9 @@ void ASquadCharacter::Interact() {
 
 void ASquadCharacter::Reload() {
 	if (CurGun == nullptr) return;
-	if (Magazines[CurGun->GetBulletType()].innerArray.Num() > 0) {
-
+	if (!Magazines[CurGun->GetBulletType()].innerArray.IsEmpty()) {
+		
+		PlayAnimMontage(ReloadAnimIronsight);
+		CurGun->SetBulletsLeft(Magazines[CurGun->GetBulletType()].innerArray.Pop());
 	}
 }

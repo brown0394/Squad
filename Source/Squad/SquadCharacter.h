@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Logging/LogMacros.h"
 #include "ECaliberType.h"
+#include "Logging/LogMacros.h"
 #include "SquadCharacter.generated.h"
 
 
@@ -62,10 +62,15 @@ class ASquadCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* UseWeaponAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ReloadAction;
 
 
 	UFUNCTION(BlueprintCallable)
 	bool GetIsAiming();
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsAttacking();
 
 public:
 	ASquadCharacter();
@@ -93,15 +98,18 @@ protected:
 
 	/** Called for use weapon input */
 	void UseWeapon();
+	void EndUseWeapon();
 
 	void Reload();
 
 	bool IsAiming;
+	bool IsAttacking;
 
 	TObjectPtr<class AGun> CurGun;
 
 	TObjectPtr<UAnimMontage> ShootAnimIronsight;
 	TObjectPtr<UAnimMontage> ShootAnimIdle;
+	TObjectPtr<UAnimMontage> ReloadAnimIronsight;
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
