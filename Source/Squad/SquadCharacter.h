@@ -107,8 +107,6 @@ protected:
 
 	TObjectPtr<class AGun> CurGun;
 
-	TObjectPtr<UAnimMontage> ShootAnimIronsight;
-	TObjectPtr<UAnimMontage> ShootAnimIdle;
 	TObjectPtr<UAnimMontage> ReloadAnimIronsight;
 protected:
 	// APawn interface

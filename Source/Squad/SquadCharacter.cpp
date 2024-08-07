@@ -47,15 +47,7 @@ ASquadCharacter::ASquadCharacter() : IsAiming(false), IsAttacking(false)
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
-	auto montage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("AnimMontage'/Game/Characters/Mannequins/Animations/FPS/Fire_Rifle_Hip_Montage.Fire_Rifle_Hip_Montage'"));
-	if (montage.Object != nullptr) {
-		ShootAnimIdle = montage.Object;
-	}
-	montage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("AnimMontage'/Game/Characters/Mannequins/Animations/FPS/Fire_Rifle_Ironsights_Montage.Fire_Rifle_Ironsights_Montage'"));
-	if (montage.Object != nullptr) {
-		ShootAnimIronsight = montage.Object;
-	}
-	montage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("AnimMontage'/Game/Characters/Mannequins/Animations/FPS/Reload_Rifle_Ironsights.Reload_Rifle_Ironsights'"));
+	auto montage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("AnimMontage'/Game/Characters/Mannequins/Animations/FPS/Reload_Rifle_Ironsights.Reload_Rifle_Ironsights'"));
 	if (montage.Object != nullptr) {
 		ReloadAnimIronsight = montage.Object;
 	}
@@ -166,10 +158,8 @@ void ASquadCharacter::UseWeapon() {
 	if (CurGun == nullptr) return;
 	if (CurGun->DoAttack()) {
 		IsAttacking = true;
-		//if (IsAiming) PlayAnimMontage(ShootAnimIronsight);
-		//else PlayAnimMontage(ShootAnimIdle);
 	}
-	else IsAttacking = false;
+	else if (CurGun->GetBulletsLeft() == 0) IsAttacking = false;
 }
 
 void ASquadCharacter::EndUseWeapon() {

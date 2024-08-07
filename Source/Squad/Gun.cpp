@@ -18,7 +18,7 @@ void AGun::BeginPlay() {
 bool AGun::DoAttack() {
 	
 	// Try and fire a projectile
-	if (Bullet != nullptr && IsReadyToAttack())
+	if (Bullet != nullptr && IsReadyToAttack() && GetBulletsLeft() > 0)
 	{
 		timeSinceLastAttack = 0.0f;
 		UWorld* const World = GetWorld();
