@@ -75,6 +75,12 @@ class ASquadCharacter : public ACharacter
 	UFUNCTION(BlueprintCallable)
 	void StopAttacking();
 
+	UFUNCTION(BlueprintCallable)
+	bool GetIsReloading();
+
+	UFUNCTION(BlueprintCallable)
+	void ReloadingDone();
+
 public:
 	ASquadCharacter();
 	
@@ -106,10 +112,10 @@ protected:
 
 	bool IsAiming;
 	bool IsAttacking;
+	bool IsReloading;
 
 	TObjectPtr<class AGun> CurGun;
 
-	TObjectPtr<UAnimMontage> ReloadAnimIronsight;
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

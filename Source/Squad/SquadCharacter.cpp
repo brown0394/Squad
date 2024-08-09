@@ -17,7 +17,7 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 //////////////////////////////////////////////////////////////////////////
 // ASquadCharacter
 
-ASquadCharacter::ASquadCharacter() : IsAiming(false), IsAttacking(false)
+ASquadCharacter::ASquadCharacter() : IsAiming(false), IsAttacking(false), IsReloading(false)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -46,11 +46,6 @@ ASquadCharacter::ASquadCharacter() : IsAiming(false), IsAttacking(false)
 	
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
-
-	auto montage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("AnimMontage'/Game/Characters/Mannequins/Animations/FPS/Reload_Rifle_Ironsights.Reload_Rifle_Ironsights'"));
-	if (montage.Object != nullptr) {
-		ReloadAnimIronsight = montage.Object;
-	}
 }
 
 void ASquadCharacter::BeginPlay()
@@ -155,7 +150,7 @@ void ASquadCharacter::StopAiming() {
 }
 
 void ASquadCharacter::UseWeapon() {
-	if (CurGun == nullptr) return;
+	if (CurGun == nullptr || IsReloading) return;
 	if (CurGun->DoAttack()) {
 		IsAttacking = true;
 	}
@@ -193,20 +188,30 @@ void ASquadCharacter::Interact() {
 		}
 		CurGun = GunToPick;
 		CurGun->AttachWeapon(this);
+		IsAttacking = false;
+		IsReloading = false;
 	}
 	//FActorSpawnParameters ActorSpawnParams;
 	//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 }
 
 void ASquadCharacter::Reload() {
-	if (CurGun == nullptr) return;
+	if (CurGun == nullptr || IsReloading) return;
 	if (!Magazines[CurGun->GetBulletType()].innerArray.IsEmpty()) {
-		
-		PlayAnimMontage(ReloadAnimIronsight);
-		CurGun->SetBulletsLeft(Magazines[CurGun->GetBulletType()].innerArray.Pop());
+		IsAttacking = false;
+		IsReloading = true;
 	}
+}
+
+bool ASquadCharacter::GetIsReloading() {
+	return IsReloading;
 }
 
 void ASquadCharacter::StopAttacking() {
 	IsAttacking = false;
+}
+
+void ASquadCharacter::ReloadingDone() {
+	IsReloading = false;
+	CurGun->SetBulletsLeft(Magazines[CurGun->GetBulletType()].innerArray.Pop());
 }
