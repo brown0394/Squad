@@ -72,6 +72,9 @@ class ASquadCharacter : public ACharacter
 	UFUNCTION(BlueprintCallable)
 	bool GetIsAttacking();
 
+	UFUNCTION(BlueprintCallable)
+	void StopAttacking();
+
 public:
 	ASquadCharacter();
 	
@@ -98,7 +101,6 @@ protected:
 
 	/** Called for use weapon input */
 	void UseWeapon();
-	void EndUseWeapon();
 
 	void Reload();
 

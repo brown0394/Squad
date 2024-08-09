@@ -97,7 +97,7 @@ void ASquadCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 		// Using Weapon
 		EnhancedInputComponent->BindAction(UseWeaponAction, ETriggerEvent::Triggered, this, &ASquadCharacter::UseWeapon);
-		EnhancedInputComponent->BindAction(UseWeaponAction, ETriggerEvent::Completed, this, &ASquadCharacter::EndUseWeapon);
+
 		// Using Reloading
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Reload);
 	}
@@ -162,10 +162,6 @@ void ASquadCharacter::UseWeapon() {
 	else if (CurGun->GetBulletsLeft() == 0) IsAttacking = false;
 }
 
-void ASquadCharacter::EndUseWeapon() {
-	IsAttacking = false;
-}
-
 bool ASquadCharacter::GetIsAiming() {
 	return IsAiming;
 }
@@ -209,4 +205,8 @@ void ASquadCharacter::Reload() {
 		PlayAnimMontage(ReloadAnimIronsight);
 		CurGun->SetBulletsLeft(Magazines[CurGun->GetBulletType()].innerArray.Pop());
 	}
+}
+
+void ASquadCharacter::StopAttacking() {
+	IsAttacking = false;
 }
