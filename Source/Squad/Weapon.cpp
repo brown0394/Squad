@@ -2,7 +2,7 @@
 
 
 #include "Weapon.h"
-#include "SquadCharacter.h"
+#include "BaseCharacter.h"
 
 // Sets default values
 AWeapon::AWeapon() : timeSinceLastAttack(0.0f)
@@ -13,7 +13,7 @@ AWeapon::AWeapon() : timeSinceLastAttack(0.0f)
 	SM->SetSimulatePhysics(true);
 }
 
-void AWeapon::AttachWeapon(TObjectPtr<ASquadCharacter> TargetCharacter) {
+void AWeapon::AttachWeapon(TObjectPtr<ABaseCharacter> TargetCharacter) {
 	if (TargetCharacter == NULL) return;
 
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);

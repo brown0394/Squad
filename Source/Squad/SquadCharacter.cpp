@@ -17,23 +17,8 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 //////////////////////////////////////////////////////////////////////////
 // ASquadCharacter
 
-ASquadCharacter::ASquadCharacter() : IsAiming(false), IsAttacking(false), IsReloading(false)
+ASquadCharacter::ASquadCharacter()
 {
-	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-	
-	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
-
-	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
-	// instead of recompiling to adjust them
-	GetCharacterMovement()->JumpZVelocity = 700.f;
-	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
-	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
-	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
-	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -52,9 +37,6 @@ void ASquadCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
-	TObjectPtr<UWorld> const World = GetWorld();
-	CurGun = World->SpawnActor<AGun>(GunToSpawn, FVector::ZeroVector, FRotator::ZeroRotator);
-	CurGun->AttachWeapon(this);
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -138,33 +120,6 @@ void ASquadCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void ASquadCharacter::Aim() {
-	IsAiming = true;
-	
-	GetCharacterMovement()->MaxWalkSpeed = 250.f;
-}
-
-void ASquadCharacter::StopAiming() {
-	IsAiming = false;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
-}
-
-void ASquadCharacter::UseWeapon() {
-	if (CurGun == nullptr || IsReloading) return;
-	if (CurGun->DoAttack()) {
-		IsAttacking = true;
-	}
-	else if (CurGun->GetBulletsLeft() == 0) IsAttacking = false;
-}
-
-bool ASquadCharacter::GetIsAiming() {
-	return IsAiming;
-}
-
-bool ASquadCharacter::GetIsAttacking() {
-	return IsAttacking;
-}
-
 void ASquadCharacter::Interact() {
 	FHitResult Hit;
 	
@@ -193,25 +148,4 @@ void ASquadCharacter::Interact() {
 	}
 	//FActorSpawnParameters ActorSpawnParams;
 	//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-}
-
-void ASquadCharacter::Reload() {
-	if (CurGun == nullptr || IsReloading) return;
-	if (!Magazines[CurGun->GetBulletType()].innerArray.IsEmpty()) {
-		IsAttacking = false;
-		IsReloading = true;
-	}
-}
-
-bool ASquadCharacter::GetIsReloading() {
-	return IsReloading;
-}
-
-void ASquadCharacter::StopAttacking() {
-	IsAttacking = false;
-}
-
-void ASquadCharacter::ReloadingDone() {
-	IsReloading = false;
-	CurGun->SetBulletsLeft(Magazines[CurGun->GetBulletType()].innerArray.Pop());
 }

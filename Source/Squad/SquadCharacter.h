@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "BaseCharacter.h"
 #include "ECaliberType.h"
 #include "Logging/LogMacros.h"
 #include "SquadCharacter.generated.h"
@@ -18,17 +19,9 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
-USTRUCT(BlueprintType)
-struct FBulletArr
-{
-	GENERATED_USTRUCT_BODY()
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<int32> innerArray;
-};
 
 UCLASS(config=Game)
-class ASquadCharacter : public ACharacter
+class ASquadCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -65,57 +58,21 @@ class ASquadCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ReloadAction;
 
-
-	UFUNCTION(BlueprintCallable)
-	bool GetIsAiming();
-
-	UFUNCTION(BlueprintCallable)
-	bool GetIsAttacking();
-
-	UFUNCTION(BlueprintCallable)
-	void StopAttacking();
-
-	UFUNCTION(BlueprintCallable)
-	bool GetIsReloading();
-
-	UFUNCTION(BlueprintCallable)
-	void ReloadingDone();
-
 public:
 	ASquadCharacter();
 	
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Gun")
-	TSubclassOf<class AGun> GunToSpawn;
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Gun")
-	TMap<ECaliberType, FBulletArr> Magazines;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-			
-	/** Called for aiming input */
-	void Aim();
-	void StopAiming();
 
 	/** Called for interacting input */
 	void Interact();
-
-	/** Called for use weapon input */
-	void UseWeapon();
-
-	void Reload();
-
-	bool IsAiming;
-	bool IsAttacking;
-	bool IsReloading;
-
-	TObjectPtr<class AGun> CurGun;
-
+			
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

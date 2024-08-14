@@ -15,7 +15,7 @@ public:
 	// Sets default values for this actor's properties
 	AWeapon();
 	virtual bool DoAttack() PURE_VIRTUAL(AWeapon::DoAttack, return true;);
-	void AttachWeapon(TObjectPtr<class ASquadCharacter> TargetCharacter);
+	void AttachWeapon(TObjectPtr<class ABaseCharacter> TargetCharacter);
 	virtual void Tick(float DeltaTime) override;
 	bool IsReadyToAttack();
 protected:
