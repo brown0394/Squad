@@ -5,7 +5,7 @@
 #include "BaseCharacter.h"
 
 // Sets default values
-AWeapon::AWeapon() : timeSinceLastAttack(0.0f)
+AWeapon::AWeapon() : timeSinceLastAttack(0.0f), isAttached(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SM = CreateDefaultSubobject<UStaticMeshComponent>("DefaultMesh");
@@ -22,6 +22,7 @@ void AWeapon::AttachWeapon(TObjectPtr<ABaseCharacter> TargetCharacter) {
 		SetActorEnableCollision(false);
 		SM->SetSimulatePhysics(false);
 		AttachToComponent(skeletalMC, AttachmentRules, FName(TEXT("hand_r_rifle")));
+		isAttached = true;
 	}
 	
 }
@@ -34,4 +35,9 @@ void AWeapon::Tick(float DeltaTime)
 
 bool AWeapon::IsReadyToAttack() {
 	return timeSinceLastAttack >= attackRate;
+}
+
+void AWeapon::Interact(TObjectPtr<class ABaseCharacter> TargetCharacter) {
+	if (isAttached) return;
+	AttachWeapon(TargetCharacter);
 }

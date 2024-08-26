@@ -131,8 +131,9 @@ void ASquadCharacter::Interact() {
 
 	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 3.0f);
 	UE_LOG(LogTemp, Log, TEXT("Tracing line: %s to %s"), *TraceStart.ToCompactString(), *TraceEnd.ToCompactString());
-
-	TObjectPtr<AGun> GunToPick = Cast<AGun>(Hit.GetActor());
+	IInteract* interactTarget = Cast<IInteract>(Hit.GetActor());
+	if (interactTarget == nullptr) return;
+	TObjectPtr<AGun> GunToPick = Cast<AGun>(interactTarget);
 	if (GunToPick != nullptr) {
 		if (CurGun != nullptr) {
 			TObjectPtr<UWorld> const World = GetWorld();
@@ -142,7 +143,7 @@ void ASquadCharacter::Interact() {
 			CurGun->Destroy();
 		}
 		CurGun = GunToPick;
-		CurGun->AttachWeapon(this);
+		CurGun->Interact(this);
 		IsAttacking = false;
 		IsReloading = false;
 	}

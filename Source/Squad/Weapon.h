@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interact.h"
 #include "Weapon.generated.h"
 
 UCLASS()
-class SQUAD_API AWeapon : public AActor
+class SQUAD_API AWeapon : public AActor, public IInteract
 {
 	GENERATED_BODY()
 	
@@ -18,6 +19,7 @@ public:
 	void AttachWeapon(TObjectPtr<class ABaseCharacter> TargetCharacter);
 	virtual void Tick(float DeltaTime) override;
 	bool IsReadyToAttack();
+	virtual void Interact(TObjectPtr<class ABaseCharacter> TargetCharacter) override;
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> SM;
@@ -28,4 +30,5 @@ protected:
 	float attackRate;
 
 	float timeSinceLastAttack;
+	bool isAttached;
 };

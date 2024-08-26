@@ -34,7 +34,7 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 	TObjectPtr<UWorld> const World = GetWorld();
 	CurGun = World->SpawnActor<AGun>(GunToSpawn, FVector::ZeroVector, FRotator::ZeroRotator);
-	CurGun->AttachWeapon(this);
+	CurGun->Interact(this);
 }
 
 // Called every frame
