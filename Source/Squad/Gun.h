@@ -37,7 +37,7 @@ protected:
 public:
 	AGun();
 	virtual bool DoAttack() override;
-
+	void Interact(TObjectPtr<class ABaseCharacter> TargetCharacter) override;
 	int GetBulletsLeft();
 	void SetBulletsLeft(int bullets);
 	ECaliberType GetBulletType();

@@ -9,7 +9,7 @@
 // Sets default values
 ABaseCharacter::ABaseCharacter() : IsAiming(false), IsAttacking(false), IsReloading(false)
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -33,8 +33,7 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	TObjectPtr<UWorld> const World = GetWorld();
-	CurGun = World->SpawnActor<AGun>(GunToSpawn, FVector::ZeroVector, FRotator::ZeroRotator);
-	CurGun->Interact(this);
+	World->SpawnActor<AGun>(GunToSpawn, FVector::ZeroVector, FRotator::ZeroRotator)->Interact(this);
 }
 
 // Called every frame
@@ -98,3 +97,6 @@ void ABaseCharacter::ReloadingDone() {
 	IsReloading = false;
 	CurGun->SetBulletsLeft(Magazines[CurGun->GetBulletType()].innerArray.Pop());
 }
+
+TObjectPtr<AGun> ABaseCharacter::GetCurGun() { return CurGun; };
+void ABaseCharacter::SetCurGun(TObjectPtr<AGun> gun) { CurGun = gun; }

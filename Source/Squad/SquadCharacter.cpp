@@ -133,20 +133,9 @@ void ASquadCharacter::Interact() {
 	UE_LOG(LogTemp, Log, TEXT("Tracing line: %s to %s"), *TraceStart.ToCompactString(), *TraceEnd.ToCompactString());
 	IInteract* interactTarget = Cast<IInteract>(Hit.GetActor());
 	if (interactTarget == nullptr) return;
-	TObjectPtr<AGun> GunToPick = Cast<AGun>(interactTarget);
-	if (GunToPick != nullptr) {
-		if (CurGun != nullptr) {
-			TObjectPtr<UWorld> const World = GetWorld();
-			TObjectPtr<AGun> spawned =
-			World->SpawnActor<AGun>(CurGun.GetClass(), GetActorLocation() + (GetActorForwardVector() * 20), FRotator::ZeroRotator);
-			spawned->SetBulletsLeft(CurGun->GetBulletsLeft());
-			CurGun->Destroy();
-		}
-		CurGun = GunToPick;
-		CurGun->Interact(this);
-		IsAttacking = false;
-		IsReloading = false;
-	}
+	interactTarget->Interact(this);
+	IsAttacking = false;
+	IsReloading = false;
 	//FActorSpawnParameters ActorSpawnParams;
 	//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 }

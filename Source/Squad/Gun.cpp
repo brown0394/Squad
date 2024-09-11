@@ -5,6 +5,7 @@
 #include "Projectile.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "BaseCharacter.h"
 
 AGun::AGun() {
 	
@@ -49,4 +50,19 @@ void AGun::SetBulletsLeft(int bullets) {
 
 ECaliberType AGun::GetBulletType() {
 	return btype;
+}
+
+void AGun::Interact(TObjectPtr<ABaseCharacter> TargetCharacter) {
+	if (isAttached) return;
+	TObjectPtr<AGun> CurGun = TargetCharacter->GetCurGun();
+	if (CurGun != nullptr) {
+		TObjectPtr<UWorld> const World = GetWorld();
+		TObjectPtr<AGun> spawned =
+			World->SpawnActor<AGun>(CurGun.GetClass(), TargetCharacter->GetActorLocation() + (TargetCharacter->GetActorForwardVector() * 20), FRotator::ZeroRotator);
+		spawned->SetBulletsLeft(CurGun->GetBulletsLeft());
+		CurGun->Destroy();
+	}
+	TargetCharacter->SetCurGun(this);
+	AttachWeapon(TargetCharacter);
+	isAttached = true;
 }
