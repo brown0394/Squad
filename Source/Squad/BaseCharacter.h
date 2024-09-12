@@ -15,7 +15,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<int32> innerArray;
 };
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStateChangeSignature);
 UCLASS()
 class SQUAD_API ABaseCharacter : public ACharacter
 {
@@ -40,6 +40,12 @@ public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
 
+	UPROPERTY(BlueprintAssignable, Category = "Character State")
+	FOnStateChangeSignature OnAimingStateChange;
+	UPROPERTY(BlueprintAssignable, Category = "Character State")
+	FOnStateChangeSignature OnAttackingStateChange;
+	UPROPERTY(BlueprintAssignable, Category = "Character State")
+	FOnStateChangeSignature OnReloadStateChange;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

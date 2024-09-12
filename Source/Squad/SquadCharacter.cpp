@@ -136,6 +136,8 @@ void ASquadCharacter::Interact() {
 	interactTarget->Interact(this);
 	IsAttacking = false;
 	IsReloading = false;
+	OnAttackingStateChange.Broadcast();
+	OnReloadStateChange.Broadcast();
 	//FActorSpawnParameters ActorSpawnParams;
 	//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 }

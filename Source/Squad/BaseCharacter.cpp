@@ -51,22 +51,27 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 }
 
 void ABaseCharacter::Aim() {
-	IsAiming = true;
-
-	GetCharacterMovement()->MaxWalkSpeed = 250.f;
+	if (!IsAiming) {
+		IsAiming = true;
+		GetCharacterMovement()->MaxWalkSpeed = 250.f;
+		OnAimingStateChange.Broadcast();
+	}
 }
 
 void ABaseCharacter::StopAiming() {
-	IsAiming = false;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	if (IsAiming) {
+		IsAiming = false;
+		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+		OnAimingStateChange.Broadcast();
+	}
 }
 
 void ABaseCharacter::UseWeapon() {
-	if (CurGun == nullptr || IsReloading) return;
+	if (CurGun == nullptr || IsReloading || IsAttacking) return;
 	if (CurGun->DoAttack()) {
 		IsAttacking = true;
+		OnAttackingStateChange.Broadcast();
 	}
-	else if (CurGun->GetBulletsLeft() == 0) IsAttacking = false;
 }
 
 bool ABaseCharacter::GetIsAiming() {
@@ -82,6 +87,8 @@ void ABaseCharacter::Reload() {
 	if (!Magazines[CurGun->GetBulletType()].innerArray.IsEmpty()) {
 		IsAttacking = false;
 		IsReloading = true;
+		OnAttackingStateChange.Broadcast();
+		OnReloadStateChange.Broadcast();
 	}
 }
 
