@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "ECaliberType.h"
+#include "../weapon/ECaliberType.h"
 #include "BaseCharacter.generated.h"
 
 USTRUCT(BlueprintType)

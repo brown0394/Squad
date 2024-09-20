@@ -4,7 +4,7 @@
 #include "BaseCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Gun.h"
+#include "../weapon/Gun.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter() : IsAiming(false), IsAttacking(false), IsReloading(false)

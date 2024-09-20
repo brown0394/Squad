@@ -10,11 +10,9 @@
 void ASquadAIController::OnPossess(APawn* InPawn) {
 	if (InPawn == nullptr) return;
 	Super::OnPossess(InPawn);
-	TObjectPtr<AAICharacter> AiChar = Cast<AAICharacter>(InPawn);
-	if (AiChar == nullptr) return;
-	BlackboardComp->InitializeBlackboard(*AiChar->BehaviorTree->BlackboardAsset);
+	BlackboardComp->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	
-	BehaviorTreeComp->StartTree(*AiChar->BehaviorTree);
+	BehaviorTreeComp->StartTree(*BehaviorTree);
 }
 
 ASquadAIController::ASquadAIController() {

@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "SquadGameMode.h"
-#include "SquadCharacter.h"
+#include "character/SquadCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASquadGameMode::ASquadGameMode()

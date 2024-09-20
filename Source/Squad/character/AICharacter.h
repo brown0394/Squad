@@ -14,7 +14,6 @@ class SQUAD_API AAICharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, Category = "BehaviorTree")
-	TObjectPtr<class UBehaviorTree> BehaviorTree;
+
 	
 };

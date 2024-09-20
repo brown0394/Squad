@@ -20,5 +20,6 @@ public:
 	TObjectPtr<class UBehaviorTreeComponent> BehaviorTreeComp;
 	UPROPERTY()
 	TObjectPtr<class UBlackboardComponent> BlackboardComp;
-
+	UPROPERTY(EditAnywhere, Category = "BehaviorTree")
+	TObjectPtr<class UBehaviorTree> BehaviorTree;
 };

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.h"
-#include "ECaliberType.h"
+#include "../weapon/ECaliberType.h"
 #include "Logging/LogMacros.h"
 #include "SquadCharacter.generated.h"
 

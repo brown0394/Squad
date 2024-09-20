@@ -10,7 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "Gun.h"
+#include "../weapon/Gun.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 

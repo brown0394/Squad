@@ -5,7 +5,7 @@
 #include "Projectile.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
-#include "BaseCharacter.h"
+#include "../character/BaseCharacter.h"
 
 AGun::AGun() {
 	

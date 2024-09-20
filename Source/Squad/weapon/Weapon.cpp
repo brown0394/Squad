@@ -2,7 +2,7 @@
 
 
 #include "Weapon.h"
-#include "BaseCharacter.h"
+#include "../character/BaseCharacter.h"
 
 // Sets default values
 AWeapon::AWeapon() : timeSinceLastAttack(0.0f), isAttached(false)
