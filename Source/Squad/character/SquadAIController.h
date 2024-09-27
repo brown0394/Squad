@@ -18,8 +18,17 @@ public:
 	ASquadAIController();
 	UPROPERTY()
 	TObjectPtr<class UBehaviorTreeComponent> BehaviorTreeComp;
-	UPROPERTY()
-	TObjectPtr<class UBlackboardComponent> BlackboardComp;
 	UPROPERTY(EditAnywhere, Category = "BehaviorTree")
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<class UAIPerceptionComponent> AIPerception;
+
+	TObjectPtr<class UAISenseConfig_Sight> SightConfig;
+	TObjectPtr<class UAISenseConfig_Hearing> HearingConfig;
+	TObjectPtr<class UAISenseConfig_Damage> DamageSenseConfig;
+	UFUNCTION()
+	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+	UFUNCTION()
+	void TargetForgotten(AActor* UpdatedActor);
 };

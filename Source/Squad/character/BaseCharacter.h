@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "../weapon/ECaliberType.h"
+#include "../interface/UseGun.h"
 #include "BaseCharacter.generated.h"
 
 USTRUCT(BlueprintType)
@@ -17,7 +18,7 @@ public:
 };
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStateChangeSignature);
 UCLASS()
-class SQUAD_API ABaseCharacter : public ACharacter
+class SQUAD_API ABaseCharacter : public ACharacter, public IUseGun
 {
 	GENERATED_BODY()
 
@@ -57,11 +58,12 @@ protected:
 	TMap<ECaliberType, FBulletArr> Magazines;
 
 	/** Called for aiming input */
-	void Aim();
+	void Aim() override;
 	void StopAiming();
 
 	/** Called for use weapon input */
-	void UseWeapon();
+	UFUNCTION(BlueprintCallable)
+	void UseWeapon() override;
 
 	void Reload();
 
