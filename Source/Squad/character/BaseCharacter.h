@@ -62,10 +62,9 @@ protected:
 	void StopAiming();
 
 	/** Called for use weapon input */
-	UFUNCTION(BlueprintCallable)
-	void UseWeapon() override;
+	bool UseWeapon() override;
 
-	void Reload();
+	void Reload() override;
 
 	bool IsAiming;
 	bool IsAttacking;

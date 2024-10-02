@@ -73,7 +73,7 @@ void ASquadCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Interact);
 
 		// Using Weapon
-		EnhancedInputComponent->BindAction(UseWeaponAction, ETriggerEvent::Triggered, this, &ASquadCharacter::UseWeapon);
+		EnhancedInputComponent->BindAction(UseWeaponAction, ETriggerEvent::Triggered, this, &ASquadCharacter::TriggerUseWeapon);
 
 		// Using Reloading
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Reload);
@@ -140,4 +140,8 @@ void ASquadCharacter::Interact() {
 	OnReloadStateChange.Broadcast();
 	//FActorSpawnParameters ActorSpawnParams;
 	//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+}
+
+void ASquadCharacter::TriggerUseWeapon() {
+	UseWeapon();
 }

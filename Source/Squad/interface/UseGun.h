@@ -23,5 +23,6 @@ class SQUAD_API IUseGun
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual void Aim();
-	virtual void UseWeapon();
+	virtual bool UseWeapon();
+	virtual void Reload();
 };

@@ -66,12 +66,13 @@ void ABaseCharacter::StopAiming() {
 	}
 }
 
-void ABaseCharacter::UseWeapon() {
-	if (CurGun == nullptr || IsReloading || IsAttacking) return;
-	if (CurGun->DoAttack()) {
+bool ABaseCharacter::UseWeapon() {
+	if (CurGun == nullptr || IsReloading || CurGun->GetBulletsLeft() == 0) return false;
+	if (!IsAttacking && CurGun->DoAttack()) {
 		IsAttacking = true;
 		OnAttackingStateChange.Broadcast();
 	}
+	return true;
 }
 
 bool ABaseCharacter::GetIsAiming() {

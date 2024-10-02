@@ -19,11 +19,11 @@ void AGun::BeginPlay() {
 bool AGun::DoAttack() {
 	
 	// Try and fire a projectile
-	if (Bullet != nullptr && IsReadyToAttack() && GetBulletsLeft() > 0)
+	if (Bullet != nullptr && IsReadyToAttack())
 	{
 		timeSinceLastAttack = 0.0f;
 		UWorld* const World = GetWorld();
-		if (World != nullptr && SM != nullptr && curBulletsLeft >= 0)
+		if (World != nullptr && SM != nullptr)
 		{
 			FVector muzzleLoc = SM->GetSocketLocation(FName(TEXT("MuzzleSocket")));
 			//Set Spawn Collision Handling Override

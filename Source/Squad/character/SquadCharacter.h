@@ -72,6 +72,8 @@ protected:
 
 	/** Called for interacting input */
 	void Interact();
+
+	void TriggerUseWeapon();
 			
 protected:
 	// APawn interface
