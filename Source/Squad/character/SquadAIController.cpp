@@ -9,12 +9,17 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISenseConfig_Hearing.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
 
 void ASquadAIController::OnPossess(APawn* InPawn) {
 	if (InPawn == nullptr) return;
 	Super::OnPossess(InPawn);
 	Blackboard->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-    Blackboard->SetValueAsObject("Target", nullptr);
+    TargetKeyID = Blackboard->GetKeyID("Target");
+    Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
+    TargetOnSightID = Blackboard->GetKeyID("TargetOnSight");
+    Blackboard->SetValue<UBlackboardKeyType_Bool>(TargetOnSightID, false);
 	BehaviorTreeComp->StartTree(*BehaviorTree);
 }
 
