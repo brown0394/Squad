@@ -59,7 +59,7 @@ protected:
 
 	/** Called for aiming input */
 	void Aim() override;
-	void StopAiming();
+	void StopAiming() override;
 
 	/** Called for use weapon input */
 	bool UseWeapon() override;
