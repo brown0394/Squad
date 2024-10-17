@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../weapon/Gun.h"
+#include "HealthComponent.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter() : IsAiming(false), IsAttacking(false), IsReloading(false)
@@ -26,6 +27,9 @@ ABaseCharacter::ABaseCharacter() : IsAiming(false), IsAttacking(false), IsReload
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+
+	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
+	HealthComp->OnDeath.BindUObject(this, &ABaseCharacter::Death);
 }
 
 // Called when the game starts or when spawned
@@ -115,3 +119,10 @@ void ABaseCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID) {
 	TeamId = InTeamID;
 }
 FGenericTeamId ABaseCharacter::GetGenericTeamId() const { return TeamId; }
+
+void ABaseCharacter::Death() {
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Dead");
+}

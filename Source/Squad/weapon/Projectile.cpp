@@ -4,10 +4,11 @@
 #include "Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "../character/HealthComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-AProjectile::AProjectile()
+AProjectile::AProjectile() : damage(0)
 {
 	// Use a sphere as a simple collision representation
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
@@ -43,6 +44,8 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		if (ProjectileParticleSystem != nullptr) {
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ProjectileParticleSystem, GetActorLocation());
 		}
+		TObjectPtr<UHealthComponent> HpComp = OtherActor->GetComponentByClass<UHealthComponent>();
+		if (HpComp != nullptr) HpComp->TakeDamage(damage, GetActorLocation());
 		Destroy();
 	}
 }

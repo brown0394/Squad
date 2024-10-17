@@ -32,6 +32,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile)
 	FRotator ParticleRotation;
 
+	float damage;
+
 public:	
 	// Sets default values for this actor's properties
 	AProjectile();
@@ -43,4 +45,6 @@ public:
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	/** Returns ProjectileMovement subobject **/
 	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+
+	void SetDamage(float p_damage) { damage = p_damage; }
 };

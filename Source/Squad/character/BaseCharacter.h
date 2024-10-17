@@ -79,6 +79,10 @@ protected:
 	bool IsReloading;
 
 	TObjectPtr<class AGun> CurGun;
+
+	TObjectPtr<class UHealthComponent> HealthComp;
+
+	virtual void Death();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

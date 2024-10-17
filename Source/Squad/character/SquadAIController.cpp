@@ -70,3 +70,10 @@ void ASquadAIController::TargetForgotten(AActor* UpdatedActor) {
     GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, UpdatedActor->GetName());
     Blackboard->SetValueAsObject("Target", nullptr);
 }
+
+void ASquadAIController::Stop() {
+    BehaviorTreeComp->StopLogic("Stop");
+    AIPerception->SetSenseEnabled(UAISense_Sight::StaticClass(), false);
+    AIPerception->SetSenseEnabled(UAISense_Hearing::StaticClass(), false);
+    
+}

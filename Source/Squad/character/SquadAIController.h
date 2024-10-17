@@ -23,6 +23,7 @@ public:
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
 	FBlackboard::FKey TargetKeyID;
 	FBlackboard::FKey TargetOnSightID;
+	void Stop();
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<class UAIPerceptionComponent> AIPerception;
@@ -34,4 +35,6 @@ protected:
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 	UFUNCTION()
 	void TargetForgotten(AActor* UpdatedActor);
+
+	
 };
