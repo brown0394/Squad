@@ -2,6 +2,7 @@
 
 #include "SquadGameMode.h"
 #include "character/SquadCharacter.h"
+#include "GenericTeamAgentInterface.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASquadGameMode::ASquadGameMode()
@@ -12,4 +13,10 @@ ASquadGameMode::ASquadGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+
+	FGenericTeamId::SetAttitudeSolver([](FGenericTeamId A, FGenericTeamId B) -> ETeamAttitude::Type {
+		if (!A.GetId() || !B.GetId()) return ETeamAttitude::Neutral;
+		if (A.GetId() == B.GetId()) return ETeamAttitude::Friendly;
+		return ETeamAttitude::Hostile;
+	});
 }

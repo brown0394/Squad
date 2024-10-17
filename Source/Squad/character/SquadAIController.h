@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "SquadAIController.generated.h"
 
 /**
@@ -20,8 +21,8 @@ public:
 	TObjectPtr<class UBehaviorTreeComponent> BehaviorTreeComp;
 	UPROPERTY(EditAnywhere, Category = "BehaviorTree")
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
-	class FBlackboard::FKey TargetKeyID;
-	class FBlackboard::FKey TargetOnSightID;
+	FBlackboard::FKey TargetKeyID;
+	FBlackboard::FKey TargetOnSightID;
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<class UAIPerceptionComponent> AIPerception;

@@ -3,7 +3,6 @@
 
 #include "SquadAIController.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "AICharacter.h"
 #include "Perception/AIPerceptionComponent.h"

@@ -32,6 +32,8 @@ ABaseCharacter::ABaseCharacter() : IsAiming(false), IsAttacking(false), IsReload
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//spawn default gun and attach it to character
 	TObjectPtr<UWorld> const World = GetWorld();
 	World->SpawnActor<AGun>(GunToSpawn, FVector::ZeroVector, FRotator::ZeroRotator)->Interact(this);
 }
@@ -108,3 +110,8 @@ void ABaseCharacter::ReloadingDone() {
 
 TObjectPtr<AGun> ABaseCharacter::GetCurGun() { return CurGun; };
 void ABaseCharacter::SetCurGun(TObjectPtr<AGun> gun) { CurGun = gun; }
+
+void ABaseCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID) {
+	TeamId = InTeamID;
+}
+FGenericTeamId ABaseCharacter::GetGenericTeamId() const { return TeamId; }

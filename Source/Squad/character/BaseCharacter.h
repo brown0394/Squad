@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "../weapon/ECaliberType.h"
 #include "../interface/UseGun.h"
+#include "GenericTeamAgentInterface.h"
 #include "BaseCharacter.generated.h"
 
 USTRUCT(BlueprintType)
@@ -18,7 +19,7 @@ public:
 };
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStateChangeSignature);
 UCLASS()
-class SQUAD_API ABaseCharacter : public ACharacter, public IUseGun
+class SQUAD_API ABaseCharacter : public ACharacter, public IUseGun, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -41,12 +42,19 @@ public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
 
+	//delegates used for to notify change to animation blueprint
 	UPROPERTY(BlueprintAssignable, Category = "Character State")
 	FOnStateChangeSignature OnAimingStateChange;
 	UPROPERTY(BlueprintAssignable, Category = "Character State")
 	FOnStateChangeSignature OnAttackingStateChange;
 	UPROPERTY(BlueprintAssignable, Category = "Character State")
 	FOnStateChangeSignature OnReloadStateChange;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Team")
+	FGenericTeamId TeamId;
+
+	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
