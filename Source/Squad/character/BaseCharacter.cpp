@@ -124,5 +124,4 @@ void ABaseCharacter::Death() {
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Dead");
 }
