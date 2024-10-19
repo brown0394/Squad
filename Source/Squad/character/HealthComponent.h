@@ -24,6 +24,11 @@ protected:
 	float hp;
 
 public:	
-	void TakeDamage(float damage, FVector hitLocation);
 	FOnDeathSignature OnDeath;
+	
+	UFUNCTION()
+	void OnOwnerTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy,
+		FVector HitLocation, UPrimitiveComponent* FHitComponent,
+		FName BoneName, FVector ShotFromDirection,
+		const UDamageType* DamageType, AActor* DamageCauser);
 };

@@ -21,10 +21,10 @@ bool AGun::DoAttack() {
 	// Try and fire a projectile
 	if (Bullet != nullptr && IsReadyToAttack())
 	{
-		timeSinceLastAttack = 0.0f;
 		UWorld* const World = GetWorld();
-		if (World != nullptr && SM != nullptr)
+		if (SM != nullptr)
 		{
+			timeSinceLastAttack = 0.0f;
 			FVector muzzleLoc = SM->GetSocketLocation(FName(TEXT("MuzzleSocket")));
 			//Set Spawn Collision Handling Override
 			FActorSpawnParameters ActorSpawnParams;

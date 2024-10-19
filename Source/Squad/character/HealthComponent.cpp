@@ -18,17 +18,30 @@ UHealthComponent::UHealthComponent(): hp(100.0f)
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	GetOwner()->OnTakePointDamage.AddDynamic(this, &UHealthComponent::OnOwnerTakePointDamage);
 	// ...
 	
 }
 
-void UHealthComponent::TakeDamage(float damage, FVector hitLocation) {
-	hp -= damage;
+void UHealthComponent::OnOwnerTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy,
+	FVector HitLocation, UPrimitiveComponent* FHitComponent,
+	FName BoneName, FVector ShotFromDirection,
+	const UDamageType* DamageType, AActor* DamageCauser) {
+	FString bone = BoneName.ToString();
+	switch (bone[0]) {
+	case 'n' :
+	case 'h': {
+		if (bone[1] == 'e') Damage *= 1.5;
+		else Damage *= 0.3;
+		break;
+	}
+	case 's': { break; }
+	default: { Damage *= 0.3; break; }
+	}
+	hp -= Damage;
 	if (hp <= 0) {
 		OnDeath.Execute();
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("damage : %f, cur hp : %f"), damage, hp));
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Location : %f %f %f"), hitLocation.X, hitLocation.Y, hitLocation.Z));
-	
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("damage : %f, cur hp : %f"), Damage, hp));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, BoneName.ToString());
 }

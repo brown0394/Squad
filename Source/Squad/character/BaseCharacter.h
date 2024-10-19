@@ -66,13 +66,13 @@ protected:
 	TMap<ECaliberType, FBulletArr> Magazines;
 
 	/** Called for aiming input */
-	void Aim() override;
-	void StopAiming() override;
+	virtual void Aim() override;
+	virtual void StopAiming() override;
 
 	/** Called for use weapon input */
-	bool UseWeapon() override;
+	virtual bool UseWeapon() override;
 
-	void Reload() override;
+	virtual void Reload() override;
 
 	bool IsAiming;
 	bool IsAttacking;
