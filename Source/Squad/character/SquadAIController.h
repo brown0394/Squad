@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "GenericTeamAgentInterface.h"
 #include "SquadAIController.generated.h"
 
 /**
@@ -24,6 +25,11 @@ public:
 	FBlackboard::FKey TargetKeyID;
 	FBlackboard::FKey TargetOnSightID;
 	void Stop();
+
+	FGenericTeamId TeamId;
+
+	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<class UAIPerceptionComponent> AIPerception;
@@ -35,6 +41,5 @@ protected:
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 	UFUNCTION()
 	void TargetForgotten(AActor* UpdatedActor);
-
 	
 };

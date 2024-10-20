@@ -4,7 +4,6 @@
 #include "SquadAIController.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
-#include "AICharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISenseConfig_Hearing.h"
@@ -20,13 +19,19 @@ void ASquadAIController::OnPossess(APawn* InPawn) {
     TargetOnSightID = Blackboard->GetKeyID("TargetOnSight");
     Blackboard->SetValue<UBlackboardKeyType_Bool>(TargetOnSightID, false);
 	BehaviorTreeComp->StartTree(*BehaviorTree);
+    IGenericTeamAgentInterface* OwnerTeamAgent = Cast<IGenericTeamAgentInterface>(InPawn);
+    if (OwnerTeamAgent != nullptr) {
+        SetGenericTeamId(OwnerTeamAgent->GetGenericTeamId());
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("%d"), OwnerTeamAgent->GetGenericTeamId().GetId()));
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("%d"), TeamId.GetId()));
+    }
+    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Posses");
 }
 
 ASquadAIController::ASquadAIController() {
 	BehaviorTreeComp = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
     AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
-    SetPerceptionComponent(*AIPerception);
     
     // Sight Config
     SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
@@ -56,24 +61,43 @@ ASquadAIController::ASquadAIController() {
 
     AIPerception->OnPerceptionUpdated.AddDynamic(this, &ASquadAIController::PerceptionUpdated);
     AIPerception->OnTargetPerceptionForgotten.AddDynamic(this, &ASquadAIController::TargetForgotten);
+    SetPerceptionComponent(*AIPerception);
 }
 
 void ASquadAIController::PerceptionUpdated(const TArray<AActor*>& UpdatedActors) {
-    if (Blackboard->GetValueAsObject("Target") != nullptr) return;
-    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, UpdatedActors[0]->GetName());
-    Blackboard->SetValueAsObject("Target", UpdatedActors[0]);
+    TObjectPtr<AActor> curTarget = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
+    TObjectPtr<AActor> target = curTarget;
+    TObjectPtr<APawn> owner = GetPawn();
+    for (auto actor : UpdatedActors) {
+        if (target == nullptr) {
+            target = actor;
+        }
+        else if (owner->GetDistanceTo(actor) < owner->GetDistanceTo(target)) {
+            target = actor;
+        }
+    }
+    if (curTarget == nullptr || target.Get() != curTarget.Get()) {
+        Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, target);
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, owner->GetName());
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, target->GetName());
+    }
 }
 
 void ASquadAIController::TargetForgotten(AActor* UpdatedActor) {
-    TObjectPtr<AActor> target = Cast<AActor>(Blackboard->GetValueAsObject("Target"));
-    if (target == nullptr || UpdatedActor != target) return;
+    TObjectPtr<AActor> target = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
+    if (target == nullptr || UpdatedActor != target.Get()) return;
     GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, UpdatedActor->GetName());
-    Blackboard->SetValueAsObject("Target", nullptr);
+    Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
 }
 
 void ASquadAIController::Stop() {
     BehaviorTreeComp->StopLogic("Stop");
     AIPerception->SetSenseEnabled(UAISense_Sight::StaticClass(), false);
     AIPerception->SetSenseEnabled(UAISense_Hearing::StaticClass(), false);
-    
+    GetPawn()->SetActorTickEnabled(false);
 }
+
+void ASquadAIController::SetGenericTeamId(const FGenericTeamId& InTeamID) {
+    TeamId = InTeamID;
+}
+FGenericTeamId ASquadAIController::GetGenericTeamId() const { return TeamId; }

@@ -13,6 +13,8 @@ class ASquadGameMode : public AGameModeBase
 
 public:
 	ASquadGameMode();
+protected:
+	virtual void BeginPlay() override;
 };
 
 

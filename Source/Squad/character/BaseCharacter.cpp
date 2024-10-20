@@ -36,7 +36,7 @@ ABaseCharacter::ABaseCharacter() : IsAiming(false), IsAttacking(false), IsReload
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("BC %d"), TeamId.GetId()));
 	//spawn default gun and attach it to character
 	TObjectPtr<UWorld> const World = GetWorld();
 	World->SpawnActor<AGun>(GunToSpawn, FVector::ZeroVector, FRotator::ZeroRotator)->Interact(this);

@@ -50,7 +50,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Character State")
 	FOnStateChangeSignature OnReloadStateChange;
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Team")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Team")
 	FGenericTeamId TeamId;
 
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;

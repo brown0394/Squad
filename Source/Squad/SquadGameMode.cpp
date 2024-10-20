@@ -14,9 +14,16 @@ ASquadGameMode::ASquadGameMode()
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
 
-	FGenericTeamId::SetAttitudeSolver([](FGenericTeamId A, FGenericTeamId B) -> ETeamAttitude::Type {
-		if (!A.GetId() || !B.GetId()) return ETeamAttitude::Neutral;
-		if (A.GetId() == B.GetId()) return ETeamAttitude::Friendly;
-		return ETeamAttitude::Hostile;
-	});
+
 }
+ETeamAttitude::Type AttitudeSolver(FGenericTeamId A, FGenericTeamId B) {
+	if (!A.GetId() || !B.GetId() || A.GetId() == FGenericTeamId::NoTeam || B.GetId() == FGenericTeamId::NoTeam) return ETeamAttitude::Neutral;
+	if (A.GetId() == B.GetId()) return ETeamAttitude::Friendly;
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Hostile");
+	return ETeamAttitude::Hostile;
+}
+void ASquadGameMode::BeginPlay() {
+	FGenericTeamId::SetAttitudeSolver(AttitudeSolver);
+	
+}
+
