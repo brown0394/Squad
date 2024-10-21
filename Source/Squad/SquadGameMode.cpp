@@ -16,13 +16,15 @@ ASquadGameMode::ASquadGameMode()
 
 
 }
+
 ETeamAttitude::Type AttitudeSolver(FGenericTeamId A, FGenericTeamId B) {
 	if (!A.GetId() || !B.GetId() || A.GetId() == FGenericTeamId::NoTeam || B.GetId() == FGenericTeamId::NoTeam) return ETeamAttitude::Neutral;
 	if (A.GetId() == B.GetId()) return ETeamAttitude::Friendly;
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Hostile");
 	return ETeamAttitude::Hostile;
 }
+
 void ASquadGameMode::BeginPlay() {
+	Super::BeginPlay();
 	FGenericTeamId::SetAttitudeSolver(AttitudeSolver);
 	
 }

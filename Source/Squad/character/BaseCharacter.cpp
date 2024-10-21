@@ -29,17 +29,24 @@ ABaseCharacter::ABaseCharacter() : IsAiming(false), IsAttacking(false), IsReload
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
 	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
-	HealthComp->OnDeath.BindUObject(this, &ABaseCharacter::Death);
+	HealthComp->OnDeath.AddUObject(this, &ABaseCharacter::Death);
 }
 
 // Called when the game starts or when spawned
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("BC %d"), TeamId.GetId()));
 	//spawn default gun and attach it to character
 	TObjectPtr<UWorld> const World = GetWorld();
 	World->SpawnActor<AGun>(GunToSpawn, FVector::ZeroVector, FRotator::ZeroRotator)->Interact(this);
+}
+
+void ABaseCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+	Super::EndPlay(EndPlayReason);
+	OnAimingStateChange.Clear();
+	OnAttackingStateChange.Clear();
+	OnReloadStateChange.Clear();
+	HealthComp->DestroyComponent();
 }
 
 // Called every frame
@@ -124,4 +131,9 @@ void ABaseCharacter::Death() {
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	EndPlay(EEndPlayReason::Destroyed);
+}
+
+const TObjectPtr<class UHealthComponent> ABaseCharacter::GetHealthComponent() {
+	return HealthComp;
 }

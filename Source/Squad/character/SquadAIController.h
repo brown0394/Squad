@@ -42,4 +42,7 @@ protected:
 	UFUNCTION()
 	void TargetForgotten(AActor* UpdatedActor);
 	
+	FDelegateHandle TargetOnDeathHandle;
+
+	void TargetDeath();
 };

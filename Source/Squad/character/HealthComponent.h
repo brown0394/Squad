@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
-DECLARE_DELEGATE(FOnDeathSignature);
+DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SQUAD_API UHealthComponent : public UActorComponent
@@ -20,7 +20,6 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	
 	float hp;
 
 public:	

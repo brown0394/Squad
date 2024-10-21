@@ -9,6 +9,8 @@
 #include "Perception/AISenseConfig_Hearing.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
+#include "HealthComponent.h"
+#include "BaseCharacter.h"
 
 void ASquadAIController::OnPossess(APawn* InPawn) {
 	if (InPawn == nullptr) return;
@@ -22,10 +24,7 @@ void ASquadAIController::OnPossess(APawn* InPawn) {
     IGenericTeamAgentInterface* OwnerTeamAgent = Cast<IGenericTeamAgentInterface>(InPawn);
     if (OwnerTeamAgent != nullptr) {
         SetGenericTeamId(OwnerTeamAgent->GetGenericTeamId());
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("%d"), OwnerTeamAgent->GetGenericTeamId().GetId()));
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("%d"), TeamId.GetId()));
     }
-    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Posses");
 }
 
 ASquadAIController::ASquadAIController() {
@@ -76,18 +75,30 @@ void ASquadAIController::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
             target = actor;
         }
     }
-    if (curTarget == nullptr || target.Get() != curTarget.Get()) {
+    if (target.Get() != curTarget.Get()) {
+        TObjectPtr<ABaseCharacter> BaseCharacter;
+        if (curTarget != nullptr) {
+            BaseCharacter = Cast<ABaseCharacter>(curTarget);
+            if (BaseCharacter != nullptr) {
+                BaseCharacter->GetHealthComponent()->OnDeath.Remove(TargetOnDeathHandle);
+            }
+        }
+        BaseCharacter = Cast<ABaseCharacter>(target);
+        if (BaseCharacter != nullptr) {
+            TargetOnDeathHandle = BaseCharacter->GetHealthComponent()->OnDeath.AddUObject(this, &ASquadAIController::TargetDeath);
+        }
         Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, target);
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, owner->GetName());
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, target->GetName());
     }
 }
 
 void ASquadAIController::TargetForgotten(AActor* UpdatedActor) {
     TObjectPtr<AActor> target = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
     if (target == nullptr || UpdatedActor != target.Get()) return;
-    GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, UpdatedActor->GetName());
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
+    TObjectPtr<ABaseCharacter> BaseCharacter = Cast<ABaseCharacter>(target);
+    if (BaseCharacter != nullptr) {
+        BaseCharacter->GetHealthComponent()->OnDeath.Remove(TargetOnDeathHandle);
+    }
 }
 
 void ASquadAIController::Stop() {
@@ -101,3 +112,7 @@ void ASquadAIController::SetGenericTeamId(const FGenericTeamId& InTeamID) {
     TeamId = InTeamID;
 }
 FGenericTeamId ASquadAIController::GetGenericTeamId() const { return TeamId; }
+
+void ASquadAIController::TargetDeath() {
+    Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
+}

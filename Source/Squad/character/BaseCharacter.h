@@ -58,6 +58,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Gun")
 	TSubclassOf<class AGun> GunToSpawn;
@@ -91,4 +92,5 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	TObjectPtr<class AGun> GetCurGun();
 	void SetCurGun(TObjectPtr<class AGun> gun);
+	const TObjectPtr<class UHealthComponent> GetHealthComponent();
 };
