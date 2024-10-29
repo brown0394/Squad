@@ -84,6 +84,7 @@ bool ABaseCharacter::UseWeapon() {
 	if (!IsAttacking && CurGun->DoAttack()) {
 		IsAttacking = true;
 		OnAttackingStateChange.Broadcast();
+		MakeNoise(1.0f, this, GetActorLocation());
 	}
 	return true;
 }

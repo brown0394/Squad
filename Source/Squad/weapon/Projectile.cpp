@@ -47,7 +47,6 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		//TObjectPtr<UHealthComponent> HpComp = OtherActor->GetComponentByClass<UHealthComponent>();
 		//if (HpComp != nullptr) HpComp->TakeDamage(damage, GetActorLocation());
 		UGameplayStatics::ApplyPointDamage(OtherActor, damage, Hit.ImpactNormal, Hit, nullptr, this, nullptr);
-		
 		Destroy();
 	}
 }

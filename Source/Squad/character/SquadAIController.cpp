@@ -7,6 +7,7 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISenseConfig_Hearing.h"
+#include "Perception/AISenseConfig_Damage.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
 #include "HealthComponent.h"
@@ -42,20 +43,23 @@ ASquadAIController::ASquadAIController() {
 
     // Detect only specific actors 
     SightConfig->DetectionByAffiliation.bDetectEnemies = true;
-    SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
-    SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+    SightConfig->DetectionByAffiliation.bDetectNeutrals = false;
+    SightConfig->DetectionByAffiliation.bDetectFriendlies = false;
 
     AIPerception->ConfigureSense(*SightConfig);
     AIPerception->SetDominantSense(SightConfig->GetSenseImplementation());
 
     HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("HearingConfig"));
-    HearingConfig->HearingRange = 500.f;
+    HearingConfig->HearingRange = 1000.f;
     HearingConfig->SetMaxAge(3.f);
-
-    HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
+    
+    HearingConfig->DetectionByAffiliation.bDetectEnemies = false;
     HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
-    HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
+    HearingConfig->DetectionByAffiliation.bDetectFriendlies = false;
     AIPerception->ConfigureSense(*HearingConfig);
+
+    DamageSenseConfig = CreateDefaultSubobject<UAISenseConfig_Damage>(TEXT("DamageConfig"));
+    DamageSenseConfig->SetMaxAge(1.0f);
     // ...
 
     AIPerception->OnPerceptionUpdated.AddDynamic(this, &ASquadAIController::PerceptionUpdated);
@@ -63,32 +67,52 @@ ASquadAIController::ASquadAIController() {
     SetPerceptionComponent(*AIPerception);
 }
 
+uint8 ASquadAIController::GetLastStimuliIdx(AActor* target) {
+    FActorPerceptionBlueprintInfo perceptionInfo;
+    AIPerception->GetActorsPerception(target, perceptionInfo);
+    for (const auto& lastStimuli : perceptionInfo.LastSensedStimuli) {
+        if (lastStimuli.IsValid()) {
+            return lastStimuli.Type.Index;
+        }
+    }
+    return -1;
+}
+
 void ASquadAIController::PerceptionUpdated(const TArray<AActor*>& UpdatedActors) {
     TObjectPtr<AActor> curTarget = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
     TObjectPtr<AActor> target = curTarget;
-    TObjectPtr<APawn> owner = GetPawn();
+
     for (auto actor : UpdatedActors) {
-        if (target == nullptr) {
-            target = actor;
-        }
-        else if (owner->GetDistanceTo(actor) < owner->GetDistanceTo(target)) {
-            target = actor;
+        uint8 idx = GetLastStimuliIdx(actor);
+        switch (idx) {
+        case 0: {  }
+        case 2: { TargetSeen(target, actor); break; }
+        case 1: { if (curTarget == nullptr) SoundHeard(actor); break; }
         }
     }
-    if (target.Get() != curTarget.Get()) {
-        TObjectPtr<ABaseCharacter> BaseCharacter;
-        if (curTarget != nullptr) {
-            BaseCharacter = Cast<ABaseCharacter>(curTarget);
-            if (BaseCharacter != nullptr) {
-                BaseCharacter->GetHealthComponent()->OnDeath.Remove(TargetOnDeathHandle);
-            }
-        }
-        BaseCharacter = Cast<ABaseCharacter>(target);
-        if (BaseCharacter != nullptr) {
-            TargetOnDeathHandle = BaseCharacter->GetHealthComponent()->OnDeath.AddUObject(this, &ASquadAIController::TargetDeath);
-        }
+    if (curTarget == target) {
+        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, "Same Target");
+    }
+    if (target != curTarget) {
+        BindTargetOnDeath(curTarget, target);
         Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, target);
     }
+}
+
+void ASquadAIController::TargetSeen(TObjectPtr<AActor>& CurTarget, TObjectPtr<AActor> ActorSensed) {
+    if (CurTarget == nullptr) {
+        CurTarget = ActorSensed;
+        return;
+    }
+    if (CurTarget == ActorSensed) return;
+    TObjectPtr<APawn> owner = GetPawn();
+    if (owner->GetDistanceTo(ActorSensed) < owner->GetDistanceTo(CurTarget)) {
+        CurTarget = ActorSensed;
+    }
+}
+void ASquadAIController::SoundHeard(TObjectPtr<AActor> ActorSensed) {
+    TObjectPtr<APawn> owner = GetPawn();
+    owner->FaceRotation((ActorSensed->GetActorLocation() - owner->GetActorLocation()).ToOrientationRotator());
 }
 
 void ASquadAIController::TargetForgotten(AActor* UpdatedActor) {
@@ -98,6 +122,20 @@ void ASquadAIController::TargetForgotten(AActor* UpdatedActor) {
     TObjectPtr<ABaseCharacter> BaseCharacter = Cast<ABaseCharacter>(target);
     if (BaseCharacter != nullptr) {
         BaseCharacter->GetHealthComponent()->OnDeath.Remove(TargetOnDeathHandle);
+    }
+}
+
+void ASquadAIController::BindTargetOnDeath(TObjectPtr<AActor> CurTarget, TObjectPtr<AActor> ActorSensed) {
+    TObjectPtr<ABaseCharacter> BaseCharacter;
+    if (CurTarget != nullptr) {
+        BaseCharacter = Cast<ABaseCharacter>(CurTarget);
+        if (BaseCharacter != nullptr) {
+            BaseCharacter->GetHealthComponent()->OnDeath.Remove(TargetOnDeathHandle);
+        }
+    }
+    BaseCharacter = Cast<ABaseCharacter>(ActorSensed);
+    if (BaseCharacter != nullptr) {
+        TargetOnDeathHandle = BaseCharacter->GetHealthComponent()->OnDeath.AddUObject(this, &ASquadAIController::TargetDeath);
     }
 }
 

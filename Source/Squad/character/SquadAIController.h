@@ -45,4 +45,10 @@ protected:
 	FDelegateHandle TargetOnDeathHandle;
 
 	void TargetDeath();
+private:
+	uint8 GetLastStimuliIdx(AActor* target);
+
+	void TargetSeen(TObjectPtr<AActor>& CurTarget, TObjectPtr<AActor> ActorSensed);
+	void SoundHeard(TObjectPtr<AActor> ActorSensed);
+	void BindTargetOnDeath(TObjectPtr<AActor> CurTarget, TObjectPtr<AActor> ActorSensed);
 };
