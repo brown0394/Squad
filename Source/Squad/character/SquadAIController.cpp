@@ -62,38 +62,25 @@ ASquadAIController::ASquadAIController() {
     DamageSenseConfig->SetMaxAge(1.0f);
     // ...
 
-    AIPerception->OnPerceptionUpdated.AddDynamic(this, &ASquadAIController::PerceptionUpdated);
+    AIPerception->OnTargetPerceptionUpdated.AddDynamic(this, &ASquadAIController::PerceptionUpdated);
     AIPerception->OnTargetPerceptionForgotten.AddDynamic(this, &ASquadAIController::TargetForgotten);
     SetPerceptionComponent(*AIPerception);
 }
 
-uint8 ASquadAIController::GetLastStimuliIdx(AActor* target) {
-    FActorPerceptionBlueprintInfo perceptionInfo;
-    AIPerception->GetActorsPerception(target, perceptionInfo);
-    for (const auto& lastStimuli : perceptionInfo.LastSensedStimuli) {
-        if (lastStimuli.IsValid()) {
-            return lastStimuli.Type.Index;
-        }
-    }
-    return -1;
-}
-
-void ASquadAIController::PerceptionUpdated(const TArray<AActor*>& UpdatedActors) {
+void ASquadAIController::PerceptionUpdated(AActor* UpdatedActor, FAIStimulus stimulus) {
+    if (!stimulus.IsValid()) return;
     TObjectPtr<AActor> curTarget = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
     TObjectPtr<AActor> target = curTarget;
-
-    for (auto actor : UpdatedActors) {
-        uint8 idx = GetLastStimuliIdx(actor);
-        switch (idx) {
-        case 0: {  }
-        case 2: { TargetSeen(target, actor); break; }
-        case 1: { if (curTarget == nullptr) SoundHeard(actor); break; }
-        }
+    
+    switch (stimulus.Type.Index) {
+    case 0: {  }
+    case 2: { TargetSeen(target, UpdatedActor); break; }
+    case 1: { if (curTarget == nullptr) SoundHeard(UpdatedActor); break; }
     }
-    if (curTarget == target) {
+    if (curTarget.Get() == target.Get()) {
         GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, "Same Target");
     }
-    if (target != curTarget) {
+    if (target.Get() != curTarget.Get()) {
         BindTargetOnDeath(curTarget, target);
         Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, target);
     }
@@ -104,7 +91,7 @@ void ASquadAIController::TargetSeen(TObjectPtr<AActor>& CurTarget, TObjectPtr<AA
         CurTarget = ActorSensed;
         return;
     }
-    if (CurTarget == ActorSensed) return;
+    if (CurTarget.Get() == ActorSensed.Get()) return;
     TObjectPtr<APawn> owner = GetPawn();
     if (owner->GetDistanceTo(ActorSensed) < owner->GetDistanceTo(CurTarget)) {
         CurTarget = ActorSensed;

@@ -38,7 +38,7 @@ protected:
 	TObjectPtr<class UAISenseConfig_Hearing> HearingConfig;
 	TObjectPtr<class UAISenseConfig_Damage> DamageSenseConfig;
 	UFUNCTION()
-	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+	void PerceptionUpdated(AActor* UpdatedActor, FAIStimulus stimulus);
 	UFUNCTION()
 	void TargetForgotten(AActor* UpdatedActor);
 	
@@ -46,7 +46,6 @@ protected:
 
 	void TargetDeath();
 private:
-	uint8 GetLastStimuliIdx(AActor* target);
 
 	void TargetSeen(TObjectPtr<AActor>& CurTarget, TObjectPtr<AActor> ActorSensed);
 	void SoundHeard(TObjectPtr<AActor> ActorSensed);
