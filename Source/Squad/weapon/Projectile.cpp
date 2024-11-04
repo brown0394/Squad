@@ -4,8 +4,8 @@
 #include "Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
-#include "../character/HealthComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Perception/AISense_Damage.h"
 
 // Sets default values
 AProjectile::AProjectile() : damage(0)
@@ -44,9 +44,8 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		if (ProjectileParticleSystem != nullptr) {
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ProjectileParticleSystem, GetActorLocation());
 		}
-		//TObjectPtr<UHealthComponent> HpComp = OtherActor->GetComponentByClass<UHealthComponent>();
-		//if (HpComp != nullptr) HpComp->TakeDamage(damage, GetActorLocation());
-		UGameplayStatics::ApplyPointDamage(OtherActor, damage, Hit.ImpactNormal, Hit, nullptr, this, nullptr);
+		UGameplayStatics::ApplyPointDamage(OtherActor, damage, Hit.ImpactNormal, Hit, nullptr, Instigator, nullptr);
+		UAISense_Damage::ReportDamageEvent(GetWorld(), OtherActor, Instigator, damage, GetActorLocation(), GetActorLocation());
 		Destroy();
 	}
 }

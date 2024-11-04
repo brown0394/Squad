@@ -43,7 +43,6 @@ void UHealthComponent::OnOwnerTakePointDamage(AActor* DamagedActor, float Damage
 		OnDeath.Broadcast();
 		OnDeath.Clear();
 	}
-	
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("damage : %f, cur hp : %f"), Damage, hp));
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, BoneName.ToString());
 }

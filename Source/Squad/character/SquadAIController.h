@@ -48,6 +48,6 @@ protected:
 private:
 
 	void TargetSeen(TObjectPtr<AActor>& CurTarget, TObjectPtr<AActor> ActorSensed);
-	void SoundHeard(TObjectPtr<AActor> ActorSensed);
+	void LookAtSenseOrigin(TObjectPtr<AActor> ActorSensed);
 	void BindTargetOnDeath(TObjectPtr<AActor> CurTarget, TObjectPtr<AActor> ActorSensed);
 };

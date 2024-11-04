@@ -35,7 +35,10 @@ bool AGun::DoAttack() {
 			// Spawn the projectile at the muzzle
 			UGameplayStatics::SpawnEmitterAttached(ShootParticleSystem, SM, FName(TEXT("MuzzleSocket")), FVector::ZeroVector, ParticleRotation, FVector(ParticleSize));
 			TObjectPtr<AProjectile> spawned = World->SpawnActor<AProjectile>(Bullet, muzzleLoc, rotation, ActorSpawnParams);
-			if (spawned != nullptr) spawned->SetDamage(damage); //nullptr means it couldnt be spawned
+			if (spawned != nullptr) {
+				spawned->SetDamage(damage); //nullptr means it couldnt be spawned
+				spawned->SetInstigator(this);
+			}
 			--curBulletsLeft;
 			return true;
 		}

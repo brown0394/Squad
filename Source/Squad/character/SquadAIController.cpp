@@ -60,6 +60,7 @@ ASquadAIController::ASquadAIController() {
 
     DamageSenseConfig = CreateDefaultSubobject<UAISenseConfig_Damage>(TEXT("DamageConfig"));
     DamageSenseConfig->SetMaxAge(1.0f);
+    AIPerception->ConfigureSense(*DamageSenseConfig);
     // ...
 
     AIPerception->OnTargetPerceptionUpdated.AddDynamic(this, &ASquadAIController::PerceptionUpdated);
@@ -73,9 +74,9 @@ void ASquadAIController::PerceptionUpdated(AActor* UpdatedActor, FAIStimulus sti
     TObjectPtr<AActor> target = curTarget;
     
     switch (stimulus.Type.Index) {
-    case 0: {  }
-    case 2: { TargetSeen(target, UpdatedActor); break; }
-    case 1: { if (curTarget == nullptr) SoundHeard(UpdatedActor); break; }
+    case 0: { TargetSeen(target, UpdatedActor); break; }
+    case 1: {  }
+    case 2: { if (curTarget == nullptr) LookAtSenseOrigin(UpdatedActor); break; }
     }
     if (curTarget.Get() == target.Get()) {
         GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, "Same Target");
@@ -97,7 +98,7 @@ void ASquadAIController::TargetSeen(TObjectPtr<AActor>& CurTarget, TObjectPtr<AA
         CurTarget = ActorSensed;
     }
 }
-void ASquadAIController::SoundHeard(TObjectPtr<AActor> ActorSensed) {
+void ASquadAIController::LookAtSenseOrigin(TObjectPtr<AActor> ActorSensed) {
     TObjectPtr<APawn> owner = GetPawn();
     owner->FaceRotation((ActorSensed->GetActorLocation() - owner->GetActorLocation()).ToOrientationRotator());
 }

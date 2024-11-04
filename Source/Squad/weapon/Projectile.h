@@ -34,6 +34,9 @@ protected:
 
 	float damage;
 
+	TObjectPtr<AActor> Instigator;
+	
+
 public:	
 	// Sets default values for this actor's properties
 	AProjectile();
@@ -45,6 +48,6 @@ public:
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	/** Returns ProjectileMovement subobject **/
 	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
-
+	void SetInstigator(TObjectPtr<AActor> SpawnedBy) { Instigator = SpawnedBy; }
 	void SetDamage(float p_damage) { damage = p_damage; }
 };
