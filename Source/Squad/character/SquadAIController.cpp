@@ -141,4 +141,5 @@ FGenericTeamId ASquadAIController::GetGenericTeamId() const { return TeamId; }
 
 void ASquadAIController::TargetDeath() {
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
+    ClearFocus(EAIFocusPriority::Default);
 }

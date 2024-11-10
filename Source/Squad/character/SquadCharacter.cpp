@@ -11,13 +11,14 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "../weapon/Gun.h"
+#include "SquadPlayerController.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
 // ASquadCharacter
 
-ASquadCharacter::ASquadCharacter()
+ASquadCharacter::ASquadCharacter() : ordering(false)
 {
 
 	// Create a follow camera
@@ -45,6 +46,8 @@ void ASquadCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+	SquadPlayerController = Cast<ASquadPlayerController>(GetController());
+	SquadPlayerController->CorsshairOnOff(false);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -75,8 +78,10 @@ void ASquadCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		// Using Weapon
 		EnhancedInputComponent->BindAction(UseWeaponAction, ETriggerEvent::Triggered, this, &ASquadCharacter::TriggerUseWeapon);
 
-		// Using Reloading
+		// Reloading
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Reload);
+
+
 	}
 	else
 	{
@@ -138,10 +143,16 @@ void ASquadCharacter::Interact() {
 	IsReloading = false;
 	OnAttackingStateChange.Broadcast();
 	OnReloadStateChange.Broadcast();
-	//FActorSpawnParameters ActorSpawnParams;
-	//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 }
 
 void ASquadCharacter::TriggerUseWeapon() {
 	UseWeapon();
+}
+
+void ASquadCharacter::MakeOrder() {
+	if (ordering) {
+		ordering = false;
+		return;
+	}
+	ordering = true;
 }

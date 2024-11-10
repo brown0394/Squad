@@ -19,9 +19,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Widget")
 	TSubclassOf<class USquadPlayerWidget> SBWidgetClass;
 
+	void CorsshairOnOff(bool on);
 protected:
 	virtual void BeginPlay();
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
+
+	
 private:
 	UPROPERTY()
 	TObjectPtr<class USquadPlayerWidget> sbWidget;

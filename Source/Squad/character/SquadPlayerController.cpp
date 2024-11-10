@@ -24,3 +24,7 @@ void ASquadPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 	}
 	Super::EndPlay(EndPlayReason);
 }
+
+void ASquadPlayerController::CorsshairOnOff(bool on) {
+	sbWidget->CorsshairOnOff(on);
+}

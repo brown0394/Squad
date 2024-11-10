@@ -58,6 +58,11 @@ class ASquadCharacter : public ABaseCharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ReloadAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* MakeOrderAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Squad")
+	TArray<TObjectPtr<class AAICharacter>> SquadMembers;
 public:
 	ASquadCharacter();
 	
@@ -74,8 +79,12 @@ protected:
 	void Interact();
 
 	void TriggerUseWeapon();
-			
-protected:
+
+	void MakeOrder();
+	bool ordering;
+
+	TObjectPtr<class ASquadPlayerController> SquadPlayerController;
+
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	

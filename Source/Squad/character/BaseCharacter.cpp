@@ -132,6 +132,7 @@ void ABaseCharacter::Death() {
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetGenericTeamId(FGenericTeamId::NoTeam);
 	EndPlay(EEndPlayReason::Destroyed);
 }
 

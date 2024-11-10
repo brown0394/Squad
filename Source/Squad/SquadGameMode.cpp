@@ -13,7 +13,10 @@ ASquadGameMode::ASquadGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
-
+	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_SquadPlayerController"));
+	if (PlayerControllerBPClass.Class != NULL) {
+		PlayerControllerClass = PlayerControllerBPClass.Class;
+	}
 
 }
 

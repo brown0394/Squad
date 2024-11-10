@@ -17,4 +17,6 @@ class SQUAD_API USquadPlayerWidget : public UUserWidget
 public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<class UImage> Crosshair;
+
+	void CorsshairOnOff(bool on);
 };
