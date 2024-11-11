@@ -21,7 +21,10 @@ void ASquadAIController::OnPossess(APawn* InPawn) {
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
     TargetOnSightID = Blackboard->GetKeyID("TargetOnSight");
     Blackboard->SetValue<UBlackboardKeyType_Bool>(TargetOnSightID, false);
+    HasTargetID = Blackboard->GetKeyID("HasTarget");
+    Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, false);
 	BehaviorTreeComp->StartTree(*BehaviorTree);
+
     IGenericTeamAgentInterface* OwnerTeamAgent = Cast<IGenericTeamAgentInterface>(InPawn);
     if (OwnerTeamAgent != nullptr) {
         SetGenericTeamId(OwnerTeamAgent->GetGenericTeamId());
@@ -72,26 +75,31 @@ void ASquadAIController::PerceptionUpdated(AActor* UpdatedActor, FAIStimulus sti
     if (!stimulus.IsValid()) return;
     TObjectPtr<AActor> curTarget = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
     TObjectPtr<AActor> target = curTarget;
+    bool bHasTarget = Blackboard->GetValue<UBlackboardKeyType_Bool>(HasTargetID);
     
     switch (stimulus.Type.Index) {
-    case 0: { TargetSeen(target, UpdatedActor); break; }
-    case 1: {  }
-    case 2: { if (curTarget == nullptr) LookAtSenseOrigin(UpdatedActor); break; }
-    }
-    if (curTarget.Get() == target.Get()) {
-        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, "Same Target");
-    }
-    if (target.Get() != curTarget.Get()) {
-        BindTargetOnDeath(curTarget, target);
-        Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, target);
+        case 0: {
+            if (bHasTarget == false) {
+                Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, true);
+                target = UpdatedActor;
+            }
+            else TargetSeen(target, UpdatedActor); 
+            if (target.Get() != curTarget.Get()) {
+                BindTargetOnDeath(curTarget, target);
+                Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, target);
+            }
+            break; 
+        }
+        case 1: {  }
+        case 2: { 
+            if (bHasTarget == false)
+                LookAtSenseOrigin(UpdatedActor); 
+            break; 
+        }
     }
 }
 
 void ASquadAIController::TargetSeen(TObjectPtr<AActor>& CurTarget, TObjectPtr<AActor> ActorSensed) {
-    if (CurTarget == nullptr) {
-        CurTarget = ActorSensed;
-        return;
-    }
     if (CurTarget.Get() == ActorSensed.Get()) return;
     TObjectPtr<APawn> owner = GetPawn();
     if (owner->GetDistanceTo(ActorSensed) < owner->GetDistanceTo(CurTarget)) {
@@ -107,6 +115,7 @@ void ASquadAIController::TargetForgotten(AActor* UpdatedActor) {
     TObjectPtr<AActor> target = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
     if (target == nullptr || UpdatedActor != target.Get()) return;
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
+    Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, false);
     TObjectPtr<ABaseCharacter> BaseCharacter = Cast<ABaseCharacter>(target);
     if (BaseCharacter != nullptr) {
         BaseCharacter->GetHealthComponent()->OnDeath.Remove(TargetOnDeathHandle);
@@ -141,5 +150,5 @@ FGenericTeamId ASquadAIController::GetGenericTeamId() const { return TeamId; }
 
 void ASquadAIController::TargetDeath() {
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
-    ClearFocus(EAIFocusPriority::Default);
+    Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, false);
 }

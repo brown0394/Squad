@@ -24,6 +24,7 @@ public:
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
 	FBlackboard::FKey TargetKeyID;
 	FBlackboard::FKey TargetOnSightID;
+	FBlackboard::FKey HasTargetID;
 	void Stop();
 
 	FGenericTeamId TeamId;
