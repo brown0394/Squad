@@ -59,7 +59,7 @@ class ASquadCharacter : public ABaseCharacter
 	UInputAction* ReloadAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* MakeOrderAction;
+	UInputAction* OrderAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Squad")
 	TArray<TObjectPtr<class AAICharacter>> SquadMembers;
@@ -80,7 +80,7 @@ protected:
 
 	void TriggerUseWeapon();
 
-	void MakeOrder();
+	void Order();
 	bool ordering;
 
 	TObjectPtr<class ASquadPlayerController> SquadPlayerController;

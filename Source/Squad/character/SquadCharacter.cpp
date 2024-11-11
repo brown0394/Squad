@@ -81,7 +81,8 @@ void ASquadCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		// Reloading
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Reload);
 
-
+		// Ordering
+		EnhancedInputComponent->BindAction(OrderAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Order);
 	}
 	else
 	{
@@ -149,10 +150,12 @@ void ASquadCharacter::TriggerUseWeapon() {
 	UseWeapon();
 }
 
-void ASquadCharacter::MakeOrder() {
+void ASquadCharacter::Order() {
 	if (ordering) {
 		ordering = false;
+		SquadPlayerController->CorsshairOnOff(false);
 		return;
 	}
+	SquadPlayerController->CorsshairOnOff(true);
 	ordering = true;
 }
