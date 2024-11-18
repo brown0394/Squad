@@ -37,8 +37,7 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	//spawn default gun and attach it to character
-	TObjectPtr<UWorld> const World = GetWorld();
-	World->SpawnActor<AGun>(GunToSpawn, FVector::ZeroVector, FRotator::ZeroRotator)->Interact(this);
+	GetWorld()->SpawnActor<AGun>(GunToSpawn, FVector::ZeroVector, FRotator::ZeroRotator)->Interact(this);
 }
 
 void ABaseCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) {

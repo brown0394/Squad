@@ -12,13 +12,14 @@
 #include "InputActionValue.h"
 #include "../weapon/Gun.h"
 #include "SquadPlayerController.h"
+#include "AICharacter.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
 // ASquadCharacter
 
-ASquadCharacter::ASquadCharacter() : ordering(false)
+ASquadCharacter::ASquadCharacter() : bOrdering(false), bClicked(false)
 {
 
 	// Create a follow camera
@@ -46,8 +47,10 @@ void ASquadCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
 	SquadPlayerController = Cast<ASquadPlayerController>(GetController());
-	SquadPlayerController->CorsshairOnOff(false);
+	SquadPlayerController->Owner = this;
+	SquadPlayerController->InitSquad();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -77,10 +80,10 @@ void ASquadCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 		// Using Weapon
 		EnhancedInputComponent->BindAction(UseWeaponAction, ETriggerEvent::Triggered, this, &ASquadCharacter::TriggerUseWeapon);
-
+		EnhancedInputComponent->BindAction(UseWeaponAction, ETriggerEvent::Completed, this, &ASquadCharacter::MouseUp);
 		// Reloading
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Reload);
-
+		
 		// Ordering
 		EnhancedInputComponent->BindAction(OrderAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Order);
 	}
@@ -126,17 +129,20 @@ void ASquadCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void ASquadCharacter::Interact() {
-	FHitResult Hit;
-	
+void ASquadCharacter::TraceForward(FHitResult& Hit, float dist) {
 	FVector TraceStart = FollowCamera->GetComponentLocation();
-	FVector TraceEnd = TraceStart + FollowCamera->GetForwardVector() * 200.0f;
+	FVector TraceEnd = TraceStart + FollowCamera->GetForwardVector() * dist;
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
 	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Pawn, QueryParams);
 
 	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 3.0f);
 	UE_LOG(LogTemp, Log, TEXT("Tracing line: %s to %s"), *TraceStart.ToCompactString(), *TraceEnd.ToCompactString());
+}
+
+void ASquadCharacter::Interact() {
+	FHitResult Hit;
+	TraceForward(Hit, 200.0f);
 	IInteract* interactTarget = Cast<IInteract>(Hit.GetActor());
 	if (interactTarget == nullptr) return;
 	interactTarget->Interact(this);
@@ -147,15 +153,25 @@ void ASquadCharacter::Interact() {
 }
 
 void ASquadCharacter::TriggerUseWeapon() {
-	UseWeapon();
+	if (bOrdering) {
+		if (bClicked) return;
+		bClicked = true;
+		FHitResult Hit;
+		TraceForward(Hit, 2000.0f);
+	}
+	else UseWeapon();
+}
+
+void ASquadCharacter::MouseUp() {
+	bClicked = false;
 }
 
 void ASquadCharacter::Order() {
-	if (ordering) {
-		ordering = false;
-		SquadPlayerController->CorsshairOnOff(false);
+	if (bOrdering) {
+		bOrdering = false;
+		SquadPlayerController->MakeOrderUI(false);
 		return;
 	}
-	SquadPlayerController->CorsshairOnOff(true);
-	ordering = true;
+	SquadPlayerController->MakeOrderUI(true);
+	bOrdering = true;
 }

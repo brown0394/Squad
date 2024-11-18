@@ -3,13 +3,14 @@
 
 #include "SquadPlayerController.h"
 #include "../SquadPlayerWidget.h"
+#include "AICharacter.h"
+#include "SquadCharacter.h"
 
 void ASquadPlayerController::BeginPlay() {
 	Super::BeginPlay();
 
 	if (SBWidgetClass) {
 		sbWidget = CreateWidget<USquadPlayerWidget>(this, SBWidgetClass);
-		
 		sbWidget->AddToViewport();
 	}
 }
@@ -25,6 +26,28 @@ void ASquadPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 	Super::EndPlay(EndPlayReason);
 }
 
-void ASquadPlayerController::CorsshairOnOff(bool on) {
+void ASquadPlayerController::InitSquad() {
+	FString str;
+	FActorSpawnParameters ActorSpawnParams;
+	TObjectPtr<ASquadCharacter> OwningPlayer = Cast<ASquadCharacter>(Owner);
+	for (int i = 1; i <= SquadNames.Num(); ++i) {
+		TObjectPtr<AAICharacter> Spawned = Cast<AAICharacter>(GetWorld()->SpawnActor<AAICharacter>(SquadClassToSpawn,
+			OwningPlayer->GetActorLocation() + (OwningPlayer->GetActorRightVector() * 50 * i), OwningPlayer->GetActorRotation()));
+		SquadMembers.Add(Spawned);
+		Spawned->SetGenericTeamId(OwningPlayer->GetGenericTeamId());
+		Spawned->SpawnDefaultController();
+		
+		str.AppendChar('0' + i);
+		str += ". ";
+		str += SquadNames[i - 1];
+		str += "     ";
+	}
+	str.AppendChar('0' + SquadNames.Num() + 1);
+	str += ". All";
+	sbWidget->InitializeText(str);
+}
+
+void ASquadPlayerController::MakeOrderUI(bool on) {
 	sbWidget->CorsshairOnOff(on);
+	sbWidget->TextOrderToOnOff(on);
 }

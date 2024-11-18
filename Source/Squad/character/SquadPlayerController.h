@@ -19,11 +19,17 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Widget")
 	TSubclassOf<class USquadPlayerWidget> SBWidgetClass;
 
-	void CorsshairOnOff(bool on);
+	void MakeOrderUI(bool on);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Squad)
+	TArray<FString> SquadNames;
+	UPROPERTY(EditDefaultsOnly, Category = Squad)
+	TSubclassOf<class AAICharacter> SquadClassToSpawn;
+	void InitSquad();
 protected:
 	virtual void BeginPlay();
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
-
+	TArray<TObjectPtr<class AAICharacter>> SquadMembers;
 	
 private:
 	UPROPERTY()

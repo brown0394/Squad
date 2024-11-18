@@ -18,5 +18,10 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<class UImage> Crosshair;
 
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	TObjectPtr<class UTextBlock> TextOrderTo;
+
 	void CorsshairOnOff(bool on);
+	void TextOrderToOnOff(bool on);
+	void InitializeText(FString& str);
 };

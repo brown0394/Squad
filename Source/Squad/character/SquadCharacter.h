@@ -61,11 +61,9 @@ class ASquadCharacter : public ABaseCharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* OrderAction;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Squad")
-	TArray<TObjectPtr<class AAICharacter>> SquadMembers;
+
 public:
 	ASquadCharacter();
-	
 
 protected:
 
@@ -81,7 +79,9 @@ protected:
 	void TriggerUseWeapon();
 
 	void Order();
-	bool ordering;
+	void MouseUp();
+	bool bOrdering;
+	bool bClicked;
 
 	TObjectPtr<class ASquadPlayerController> SquadPlayerController;
 
@@ -90,6 +90,8 @@ protected:
 	
 	// To add mapping context
 	virtual void BeginPlay();
+
+	void TraceForward(FHitResult& Hit, float dist);
 
 public:
 	/** Returns FollowCamera subobject **/

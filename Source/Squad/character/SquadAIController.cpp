@@ -91,7 +91,7 @@ void ASquadAIController::PerceptionUpdated(AActor* UpdatedActor, FAIStimulus sti
             break; 
         }
         case 1: {  }
-        case 2: { 
+        case 2: {
             if (bHasTarget == false)
                 LookAtSenseOrigin(UpdatedActor); 
             break; 
