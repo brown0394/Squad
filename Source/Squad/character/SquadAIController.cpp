@@ -10,6 +10,7 @@
 #include "Perception/AISenseConfig_Damage.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
 #include "HealthComponent.h"
 #include "BaseCharacter.h"
 
@@ -23,6 +24,8 @@ void ASquadAIController::OnPossess(APawn* InPawn) {
     Blackboard->SetValue<UBlackboardKeyType_Bool>(TargetOnSightID, false);
     HasTargetID = Blackboard->GetKeyID("HasTarget");
     Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, false);
+    PerceptionCauserLocID = Blackboard->GetKeyID("PerceptionCauserLoc");
+
 	BehaviorTreeComp->StartTree(*BehaviorTree);
 
     IGenericTeamAgentInterface* OwnerTeamAgent = Cast<IGenericTeamAgentInterface>(InPawn);
@@ -31,7 +34,7 @@ void ASquadAIController::OnPossess(APawn* InPawn) {
     }
 }
 
-ASquadAIController::ASquadAIController() {
+ASquadAIController::ASquadAIController() : bTargetDesignated(false) {
 	BehaviorTreeComp = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
     AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
@@ -72,7 +75,7 @@ ASquadAIController::ASquadAIController() {
 }
 
 void ASquadAIController::PerceptionUpdated(AActor* UpdatedActor, FAIStimulus stimulus) {
-    if (!stimulus.IsValid()) return;
+    if (!stimulus.IsValid() || bTargetDesignated) return;
     TObjectPtr<AActor> curTarget = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
     TObjectPtr<AActor> target = curTarget;
     bool bHasTarget = Blackboard->GetValue<UBlackboardKeyType_Bool>(HasTargetID);
@@ -93,7 +96,7 @@ void ASquadAIController::PerceptionUpdated(AActor* UpdatedActor, FAIStimulus sti
         case 1: {  }
         case 2: {
             if (bHasTarget == false)
-                LookAtSenseOrigin(UpdatedActor); 
+                Blackboard->SetValue<UBlackboardKeyType_Vector>(PerceptionCauserLocID, UpdatedActor->GetActorLocation());
             break; 
         }
     }
@@ -151,4 +154,12 @@ FGenericTeamId ASquadAIController::GetGenericTeamId() const { return TeamId; }
 void ASquadAIController::TargetDeath() {
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
     Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, false);
+}
+
+void ASquadAIController::DesignateTarget(TObjectPtr<AActor> Target) {
+    if (Target == nullptr) return;
+    bTargetDesignated = true;
+    TObjectPtr<AActor> curTarget = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
+    BindTargetOnDeath(curTarget, Target);
+    Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, Target);
 }

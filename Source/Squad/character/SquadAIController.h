@@ -25,12 +25,15 @@ public:
 	FBlackboard::FKey TargetKeyID;
 	FBlackboard::FKey TargetOnSightID;
 	FBlackboard::FKey HasTargetID;
+	FBlackboard::FKey PerceptionCauserLocID;
 	void Stop();
 
 	FGenericTeamId TeamId;
 
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
+
+	void DesignateTarget(TObjectPtr<AActor> Target);
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<class UAIPerceptionComponent> AIPerception;
@@ -51,4 +54,6 @@ private:
 	void TargetSeen(TObjectPtr<AActor>& CurTarget, TObjectPtr<AActor> ActorSensed);
 	void LookAtSenseOrigin(TObjectPtr<AActor> ActorSensed);
 	void BindTargetOnDeath(TObjectPtr<AActor> CurTarget, TObjectPtr<AActor> ActorSensed);
+
+	bool bTargetDesignated;
 };
