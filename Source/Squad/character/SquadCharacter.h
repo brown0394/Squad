@@ -61,6 +61,15 @@ class ASquadCharacter : public ABaseCharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* OrderAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* NumPressedAction1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* NumPressedAction2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* NumPressedAction3;
+
 
 public:
 	ASquadCharacter();
@@ -79,9 +88,21 @@ protected:
 	void TriggerUseWeapon();
 
 	void Order();
-	void MouseUp();
+	void OrderNum(int num);
 	bool bOrdering;
 	bool bClicked;
+	bool bMemberSelected;
+
+	void NumPressed1();
+	void NumPressed2();
+	void NumPressed3();
+
+	void SelectMember(int idx);
+	void SelectOrder(int idx);
+
+	void DesignateTarget();
+
+	int MemberIdx;
 
 	TObjectPtr<class ASquadPlayerController> SquadPlayerController;
 

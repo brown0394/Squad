@@ -20,12 +20,16 @@ public:
 	TSubclassOf<class USquadPlayerWidget> SBWidgetClass;
 
 	void MakeOrderUI(bool on);
+	void OrderListOnOff(bool on);
+	void CrosshairOnOff(bool on);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Squad)
 	TArray<FString> SquadNames;
 	UPROPERTY(EditDefaultsOnly, Category = Squad)
 	TSubclassOf<class AAICharacter> SquadClassToSpawn;
 	void InitSquad();
+
+	void SetMemberTarget(TObjectPtr<AActor> target, int idx);
 protected:
 	virtual void BeginPlay();
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);

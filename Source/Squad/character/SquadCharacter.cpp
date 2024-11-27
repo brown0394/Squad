@@ -19,7 +19,7 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 //////////////////////////////////////////////////////////////////////////
 // ASquadCharacter
 
-ASquadCharacter::ASquadCharacter() : bOrdering(false), bClicked(false)
+ASquadCharacter::ASquadCharacter() : bOrdering(false), bClicked(false), bMemberSelected(false), MemberIdx(-1)
 {
 
 	// Create a follow camera
@@ -80,12 +80,16 @@ void ASquadCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 		// Using Weapon
 		EnhancedInputComponent->BindAction(UseWeaponAction, ETriggerEvent::Triggered, this, &ASquadCharacter::TriggerUseWeapon);
-		EnhancedInputComponent->BindAction(UseWeaponAction, ETriggerEvent::Completed, this, &ASquadCharacter::MouseUp);
+
 		// Reloading
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Reload);
 		
 		// Ordering
 		EnhancedInputComponent->BindAction(OrderAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Order);
+
+		EnhancedInputComponent->BindAction(NumPressedAction1, ETriggerEvent::Triggered, this, &ASquadCharacter::NumPressed1);
+		EnhancedInputComponent->BindAction(NumPressedAction2, ETriggerEvent::Triggered, this, &ASquadCharacter::NumPressed2);
+		EnhancedInputComponent->BindAction(NumPressedAction3, ETriggerEvent::Triggered, this, &ASquadCharacter::NumPressed3);
 	}
 	else
 	{
@@ -97,7 +101,7 @@ void ASquadCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
-
+	
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
@@ -153,25 +157,61 @@ void ASquadCharacter::Interact() {
 }
 
 void ASquadCharacter::TriggerUseWeapon() {
-	if (bOrdering) {
-		if (bClicked) return;
-		bClicked = true;
-		FHitResult Hit;
-		TraceForward(Hit, 2000.0f);
-	}
-	else UseWeapon();
-}
-
-void ASquadCharacter::MouseUp() {
-	bClicked = false;
+	if (bOrdering) return;
+	UseWeapon();
 }
 
 void ASquadCharacter::Order() {
 	if (bOrdering) {
 		bOrdering = false;
 		SquadPlayerController->MakeOrderUI(false);
+		SquadPlayerController->CrosshairOnOff(false);
 		return;
 	}
 	SquadPlayerController->MakeOrderUI(true);
+	SquadPlayerController->CrosshairOnOff(true);
 	bOrdering = true;
+	MemberIdx = -1;
+}
+
+void ASquadCharacter::OrderNum(int num) {
+	if (!bOrdering) return;
+	if (MemberIdx < 0) {
+		SelectMember(num);
+		return;
+	}
+	SelectOrder(num);
+}
+
+void ASquadCharacter::NumPressed1() {
+	OrderNum(0);
+}
+void ASquadCharacter::NumPressed2() {
+	OrderNum(1);
+}
+void ASquadCharacter::NumPressed3() {
+	OrderNum(2);
+}
+
+void ASquadCharacter::SelectMember(int idx) {
+	MemberIdx = idx;
+	SquadPlayerController->MakeOrderUI(false);
+	SquadPlayerController->OrderListOnOff(true);
+}
+
+void ASquadCharacter::SelectOrder(int idx) {
+	MemberIdx = -1;
+	SquadPlayerController->MakeOrderUI(false);
+	SquadPlayerController->OrderListOnOff(false);
+	SquadPlayerController->CrosshairOnOff(false);
+	bOrdering = false;
+	switch (idx) {
+	case 0: { DesignateTarget(); break; }
+	}
+}
+
+void ASquadCharacter::DesignateTarget() {
+	FHitResult Hit;
+	TraceForward(Hit, 2000.0f);
+	SquadPlayerController->SetMemberTarget(Hit.GetActor(), MemberIdx);
 }

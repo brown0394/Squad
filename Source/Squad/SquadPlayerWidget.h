@@ -21,7 +21,11 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<class UTextBlock> TextOrderTo;
 
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	TObjectPtr<class UTextBlock> TextOrderList;
+
 	void CorsshairOnOff(bool on);
 	void TextOrderToOnOff(bool on);
+	void TextOrderListOnOff(bool on);
 	void InitializeText(FString& str);
 };

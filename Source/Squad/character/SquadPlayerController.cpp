@@ -48,6 +48,24 @@ void ASquadPlayerController::InitSquad() {
 }
 
 void ASquadPlayerController::MakeOrderUI(bool on) {
-	sbWidget->CorsshairOnOff(on);
 	sbWidget->TextOrderToOnOff(on);
+}
+
+void ASquadPlayerController::OrderListOnOff(bool on) {
+	sbWidget->TextOrderListOnOff(on);
+}
+
+void ASquadPlayerController::CrosshairOnOff(bool on) {
+	sbWidget->CorsshairOnOff(on);
+}
+
+void ASquadPlayerController::SetMemberTarget(TObjectPtr<AActor> target, int idx) {
+	IGenericTeamAgentInterface* ITargetTeamAgent = Cast<IGenericTeamAgentInterface>(target);
+	if (ITargetTeamAgent != nullptr && ITargetTeamAgent->GetTeamAttitudeTowards(*this) == ETeamAttitude::Hostile) {
+		if (SquadMembers.Num() <= idx) {
+			for (auto member : SquadMembers) {
+				
+			}
+		}
+	}
 }

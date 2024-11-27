@@ -14,9 +14,15 @@ void USquadPlayerWidget::InitializeText(FString& str) {
 	TextOrderTo->SetText(FText::FromString(str));
 	TextOrderTo->SetVisibility(ESlateVisibility::Hidden);
 	Crosshair->SetVisibility(ESlateVisibility::Hidden);
+	TextOrderList->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void USquadPlayerWidget::TextOrderToOnOff(bool on) {
 	if (on) TextOrderTo->SetVisibility(ESlateVisibility::Visible);
 	else TextOrderTo->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void USquadPlayerWidget::TextOrderListOnOff(bool on) {
+	if (on) TextOrderList->SetVisibility(ESlateVisibility::Visible);
+	else TextOrderList->SetVisibility(ESlateVisibility::Hidden);
 }
