@@ -200,14 +200,14 @@ void ASquadCharacter::SelectMember(int idx) {
 }
 
 void ASquadCharacter::SelectOrder(int idx) {
+	switch (idx) {
+	case 0: { DesignateTarget(); break; }
+	}
 	MemberIdx = -1;
 	SquadPlayerController->MakeOrderUI(false);
 	SquadPlayerController->OrderListOnOff(false);
 	SquadPlayerController->CrosshairOnOff(false);
 	bOrdering = false;
-	switch (idx) {
-	case 0: { DesignateTarget(); break; }
-	}
 }
 
 void ASquadCharacter::DesignateTarget() {

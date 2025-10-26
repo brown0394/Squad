@@ -51,9 +51,10 @@ protected:
 	void TargetDeath();
 private:
 
-	void TargetSeen(TObjectPtr<AActor>& CurTarget, TObjectPtr<AActor> ActorSensed);
+	bool changeTargetSeenByDistance(TObjectPtr<AActor>& CurTarget, TObjectPtr<AActor> ActorSensed);
 	void LookAtSenseOrigin(TObjectPtr<AActor> ActorSensed);
 	void BindTargetOnDeath(TObjectPtr<AActor> CurTarget, TObjectPtr<AActor> ActorSensed);
+	void OnStimulusSight( const bool bHasTarget, const TObjectPtr<AActor> curTarget, AActor* UpdatedActor );
 
 	bool bTargetDesignated;
 };

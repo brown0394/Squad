@@ -75,39 +75,54 @@ ASquadAIController::ASquadAIController() : bTargetDesignated(false) {
 }
 
 void ASquadAIController::PerceptionUpdated(AActor* UpdatedActor, FAIStimulus stimulus) {
-    if (!stimulus.IsValid() || bTargetDesignated) return;
+    if (!stimulus.IsValid() || bTargetDesignated)
+        return;
+
     TObjectPtr<AActor> curTarget = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
-    TObjectPtr<AActor> target = curTarget;
     bool bHasTarget = Blackboard->GetValue<UBlackboardKeyType_Bool>(HasTargetID);
     
+    static constexpr uint8 stimiulusSight = 0;
+    static constexpr uint8 stimiulusTouch = 1;
+    static constexpr uint8 stimiulusHear = 2;
+
     switch (stimulus.Type.Index) {
-        case 0: {
-            if (bHasTarget == false) {
-                Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, true);
-                target = UpdatedActor;
-            }
-            else TargetSeen(target, UpdatedActor); 
-            if (target.Get() != curTarget.Get()) {
-                BindTargetOnDeath(curTarget, target);
-                Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, target);
-            }
-            break; 
-        }
-        case 1: {  }
-        case 2: {
+        case stimiulusSight: {
+            OnStimulusSight(bHasTarget, curTarget, UpdatedActor);
+        } break;
+        case stimiulusTouch: {  }
+        case stimiulusHear: {
             if (bHasTarget == false)
                 Blackboard->SetValue<UBlackboardKeyType_Vector>(PerceptionCauserLocID, UpdatedActor->GetActorLocation());
-            break; 
-        }
+            
+        }break;
     }
 }
 
-void ASquadAIController::TargetSeen(TObjectPtr<AActor>& CurTarget, TObjectPtr<AActor> ActorSensed) {
-    if (CurTarget.Get() == ActorSensed.Get()) return;
+void ASquadAIController::OnStimulusSight( const bool bHasTarget, const TObjectPtr<AActor> curTarget, AActor* UpdatedActor )
+{
+    TObjectPtr<AActor> target = curTarget;
+    if (bHasTarget == false) {
+        Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, true);
+        target = UpdatedActor;
+    }
+    else if (bHasTarget && changeTargetSeenByDistance(target, UpdatedActor) == false )
+        return;
+
+     BindTargetOnDeath(curTarget, target);
+     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, target);
+}
+
+bool ASquadAIController::changeTargetSeenByDistance(TObjectPtr<AActor>& CurTarget, TObjectPtr<AActor> ActorSensed) {
+    if (CurTarget.Get() == ActorSensed.Get())
+        return false;
+
     TObjectPtr<APawn> owner = GetPawn();
     if (owner->GetDistanceTo(ActorSensed) < owner->GetDistanceTo(CurTarget)) {
         CurTarget = ActorSensed;
+        return true;
     }
+
+    return false;
 }
 void ASquadAIController::LookAtSenseOrigin(TObjectPtr<AActor> ActorSensed) {
     TObjectPtr<APawn> owner = GetPawn();
@@ -154,12 +169,16 @@ FGenericTeamId ASquadAIController::GetGenericTeamId() const { return TeamId; }
 void ASquadAIController::TargetDeath() {
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
     Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, false);
+    bTargetDesignated = false;
 }
 
 void ASquadAIController::DesignateTarget(TObjectPtr<AActor> Target) {
-    if (Target == nullptr) return;
+    if (Target == nullptr)
+        return;
+
     bTargetDesignated = true;
     TObjectPtr<AActor> curTarget = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
     BindTargetOnDeath(curTarget, Target);
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, Target);
+    Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, true);
 }

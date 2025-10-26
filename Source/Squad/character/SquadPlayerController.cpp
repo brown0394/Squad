@@ -5,6 +5,7 @@
 #include "../SquadPlayerWidget.h"
 #include "AICharacter.h"
 #include "SquadCharacter.h"
+#include "SquadAIController.h"
 
 void ASquadPlayerController::BeginPlay() {
 	Super::BeginPlay();
@@ -60,12 +61,19 @@ void ASquadPlayerController::CrosshairOnOff(bool on) {
 }
 
 void ASquadPlayerController::SetMemberTarget(TObjectPtr<AActor> target, int idx) {
-	IGenericTeamAgentInterface* ITargetTeamAgent = Cast<IGenericTeamAgentInterface>(target);
-	if (ITargetTeamAgent != nullptr && ITargetTeamAgent->GetTeamAttitudeTowards(*this) == ETeamAttitude::Hostile) {
-		if (SquadMembers.Num() <= idx) {
-			for (auto member : SquadMembers) {
-				
-			}
+	if (SquadMembers.Num() < idx) 
+		return;
+
+	if (SquadMembers.Num() == idx)
+	{
+		for (TObjectPtr<class AAICharacter> member : SquadMembers) {
+			ASquadAIController* memberAiController = Cast<ASquadAIController>(member->GetController());
+
+			memberAiController->DesignateTarget(target);
 		}
+		return;
 	}
+
+	ASquadAIController* memberAiController = Cast<ASquadAIController>(SquadMembers[idx]->GetController());
+	memberAiController->DesignateTarget(target);
 }
