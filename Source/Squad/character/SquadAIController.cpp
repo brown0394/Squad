@@ -15,16 +15,20 @@
 #include "BaseCharacter.h"
 
 void ASquadAIController::OnPossess(APawn* InPawn) {
-	if (InPawn == nullptr) return;
+	if (InPawn == nullptr) 
+        return;
+
 	Super::OnPossess(InPawn);
 	Blackboard->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
     TargetKeyID = Blackboard->GetKeyID("Target");
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
     TargetOnSightID = Blackboard->GetKeyID("TargetOnSight");
     Blackboard->SetValue<UBlackboardKeyType_Bool>(TargetOnSightID, false);
-    HasTargetID = Blackboard->GetKeyID("HasTarget");
-    Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, false);
     PerceptionCauserLocID = Blackboard->GetKeyID("PerceptionCauserLoc");
+    FollowTargetKeyID = Blackboard->GetKeyID("FollowTarget");
+    Blackboard->SetValue<UBlackboardKeyType_Object>(FollowTargetKeyID, nullptr);
+    FormationOffsetKeyID = Blackboard->GetKeyID("FormationOffset");
+    PointOfInterestKeyID = Blackboard->GetKeyID("PointOfInterest");
 
 	BehaviorTreeComp->StartTree(*BehaviorTree);
 
@@ -34,7 +38,7 @@ void ASquadAIController::OnPossess(APawn* InPawn) {
     }
 }
 
-ASquadAIController::ASquadAIController() : bTargetDesignated(false) {
+ASquadAIController::ASquadAIController() : bTargetDesignated(false), bFollowingLeader(false) {
 	BehaviorTreeComp = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
     AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
@@ -75,11 +79,10 @@ ASquadAIController::ASquadAIController() : bTargetDesignated(false) {
 }
 
 void ASquadAIController::PerceptionUpdated(AActor* UpdatedActor, FAIStimulus stimulus) {
-    if (!stimulus.IsValid() || bTargetDesignated)
+    if (!stimulus.IsValid() || bTargetDesignated || bFollowingLeader)
         return;
 
     TObjectPtr<AActor> curTarget = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
-    bool bHasTarget = Blackboard->GetValue<UBlackboardKeyType_Bool>(HasTargetID);
     
     static constexpr uint8 stimiulusSight = 0;
     static constexpr uint8 stimiulusTouch = 1;
@@ -87,25 +90,23 @@ void ASquadAIController::PerceptionUpdated(AActor* UpdatedActor, FAIStimulus sti
 
     switch (stimulus.Type.Index) {
         case stimiulusSight: {
-            OnStimulusSight(bHasTarget, curTarget, UpdatedActor);
+            OnStimulusSight(curTarget, UpdatedActor);
         } break;
         case stimiulusTouch: {  }
         case stimiulusHear: {
-            if (bHasTarget == false)
+            if (curTarget == nullptr)
                 Blackboard->SetValue<UBlackboardKeyType_Vector>(PerceptionCauserLocID, UpdatedActor->GetActorLocation());
             
         }break;
     }
 }
 
-void ASquadAIController::OnStimulusSight( const bool bHasTarget, const TObjectPtr<AActor> curTarget, AActor* UpdatedActor )
+void ASquadAIController::OnStimulusSight( const TObjectPtr<AActor> curTarget, AActor* UpdatedActor )
 {
     TObjectPtr<AActor> target = curTarget;
-    if (bHasTarget == false) {
-        Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, true);
+    if ( target == nullptr )
         target = UpdatedActor;
-    }
-    else if (bHasTarget && changeTargetSeenByDistance(target, UpdatedActor) == false )
+    else if ( changeTargetSeenByDistance(target, UpdatedActor) == false )
         return;
 
      BindTargetOnDeath(curTarget, target);
@@ -124,6 +125,7 @@ bool ASquadAIController::changeTargetSeenByDistance(TObjectPtr<AActor>& CurTarge
 
     return false;
 }
+
 void ASquadAIController::LookAtSenseOrigin(TObjectPtr<AActor> ActorSensed) {
     TObjectPtr<APawn> owner = GetPawn();
     owner->FaceRotation((ActorSensed->GetActorLocation() - owner->GetActorLocation()).ToOrientationRotator());
@@ -133,7 +135,6 @@ void ASquadAIController::TargetForgotten(AActor* UpdatedActor) {
     TObjectPtr<AActor> target = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
     if (target == nullptr || UpdatedActor != target.Get()) return;
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
-    Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, false);
     TObjectPtr<ABaseCharacter> BaseCharacter = Cast<ABaseCharacter>(target);
     if (BaseCharacter != nullptr) {
         BaseCharacter->GetHealthComponent()->OnDeath.Remove(TargetOnDeathHandle);
@@ -148,6 +149,7 @@ void ASquadAIController::BindTargetOnDeath(TObjectPtr<AActor> CurTarget, TObject
             BaseCharacter->GetHealthComponent()->OnDeath.Remove(TargetOnDeathHandle);
         }
     }
+
     BaseCharacter = Cast<ABaseCharacter>(ActorSensed);
     if (BaseCharacter != nullptr) {
         TargetOnDeathHandle = BaseCharacter->GetHealthComponent()->OnDeath.AddUObject(this, &ASquadAIController::TargetDeath);
@@ -164,21 +166,41 @@ void ASquadAIController::Stop() {
 void ASquadAIController::SetGenericTeamId(const FGenericTeamId& InTeamID) {
     TeamId = InTeamID;
 }
+
 FGenericTeamId ASquadAIController::GetGenericTeamId() const { return TeamId; }
 
 void ASquadAIController::TargetDeath() {
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
-    Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, false);
     bTargetDesignated = false;
 }
 
 void ASquadAIController::DesignateTarget(TObjectPtr<AActor> Target) {
-    if (Target == nullptr)
+    if ( ( Target == nullptr ) || ( Cast<AActor>(GetPawn()) == Target ) )
         return;
 
     bTargetDesignated = true;
+    bFollowingLeader = false;
     TObjectPtr<AActor> curTarget = Cast<AActor>(Blackboard->GetValue<UBlackboardKeyType_Object>(TargetKeyID));
     BindTargetOnDeath(curTarget, Target);
+    Blackboard->SetValue<UBlackboardKeyType_Object>(FollowTargetKeyID, nullptr);
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, Target);
-    Blackboard->SetValue<UBlackboardKeyType_Bool>(HasTargetID, true);
+}
+
+void ASquadAIController::FollowSquadLeader(FVector FormationOffset) {
+    if (SquadLeader == nullptr) return;
+
+    bFollowingLeader = true;
+    bTargetDesignated = false;
+
+    Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
+    Blackboard->SetValue<UBlackboardKeyType_Object>(FollowTargetKeyID, SquadLeader);
+    Blackboard->SetValue<UBlackboardKeyType_Vector>(FormationOffsetKeyID, FormationOffset);
+}
+
+void ASquadAIController::FreeWill() {
+    bFollowingLeader = false;
+    bTargetDesignated = false;
+
+    Blackboard->SetValue<UBlackboardKeyType_Object>(FollowTargetKeyID, nullptr);
+    Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
 }

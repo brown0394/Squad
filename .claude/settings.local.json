@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"C:/Program Files/Epic Games/UE_5.6/Engine/Build/BatchFiles/Build.bat\" SquadEditor Win64 Development \"C:/Users/user/Documents/GitHub/Squad/Squad.uproject\" -waitmutex)"
+    ]
+  }
+}

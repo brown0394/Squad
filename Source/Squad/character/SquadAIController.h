@@ -24,8 +24,10 @@ public:
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
 	FBlackboard::FKey TargetKeyID;
 	FBlackboard::FKey TargetOnSightID;
-	FBlackboard::FKey HasTargetID;
 	FBlackboard::FKey PerceptionCauserLocID;
+	FBlackboard::FKey FollowTargetKeyID;
+	FBlackboard::FKey FormationOffsetKeyID;
+	FBlackboard::FKey PointOfInterestKeyID;
 	void Stop();
 
 	FGenericTeamId TeamId;
@@ -33,7 +35,11 @@ public:
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
+	TObjectPtr<AActor> SquadLeader;
+
 	void DesignateTarget(TObjectPtr<AActor> Target);
+	void FollowSquadLeader(FVector FormationOffset);
+	void FreeWill();
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<class UAIPerceptionComponent> AIPerception;
@@ -54,7 +60,8 @@ private:
 	bool changeTargetSeenByDistance(TObjectPtr<AActor>& CurTarget, TObjectPtr<AActor> ActorSensed);
 	void LookAtSenseOrigin(TObjectPtr<AActor> ActorSensed);
 	void BindTargetOnDeath(TObjectPtr<AActor> CurTarget, TObjectPtr<AActor> ActorSensed);
-	void OnStimulusSight( const bool bHasTarget, const TObjectPtr<AActor> curTarget, AActor* UpdatedActor );
+	void OnStimulusSight( const TObjectPtr<AActor> curTarget, AActor* UpdatedActor );
 
 	bool bTargetDesignated;
+	bool bFollowingLeader;
 };

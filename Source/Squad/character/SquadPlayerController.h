@@ -29,7 +29,9 @@ public:
 	TSubclassOf<class AAICharacter> SquadClassToSpawn;
 	void InitSquad();
 
-	void SetMemberTarget(TObjectPtr<AActor> target, int idx);
+	void SetMemberTarget(TObjectPtr<AActor> target, int memberIdx);
+	void SetMemberFollow(int memberIdx);
+	void SetMemberFreeWill(int memberIdx);
 protected:
 	virtual void BeginPlay();
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);

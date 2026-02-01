@@ -10,7 +10,6 @@ UHealthComponent::UHealthComponent(): hp(100.0f)
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
 }
 
 
@@ -19,7 +18,6 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	GetOwner()->OnTakePointDamage.AddDynamic(this, &UHealthComponent::OnOwnerTakePointDamage);
-	// ...
 	
 }
 
@@ -28,6 +26,10 @@ void UHealthComponent::OnOwnerTakePointDamage(AActor* DamagedActor, float Damage
 	FName BoneName, FVector ShotFromDirection,
 	const UDamageType* DamageType, AActor* DamageCauser) {
 	FString bone = BoneName.ToString();
+
+	if (bone.Len() < 2)
+		return;
+
 	switch (bone[0]) {
 	case 'n' :
 	case 'h': {

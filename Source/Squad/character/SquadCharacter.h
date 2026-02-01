@@ -97,12 +97,14 @@ protected:
 	void NumPressed2();
 	void NumPressed3();
 
-	void SelectMember(int idx);
-	void SelectOrder(int idx);
+	void SelectMember(int memberIdx);
+	void SelectOrder(int orderIdx);
 
 	void DesignateTarget();
+	void FollowOrder();
+	void FreeWillOrder();
 
-	int MemberIdx;
+	int _memberIdx;
 
 	TObjectPtr<class ASquadPlayerController> SquadPlayerController;
 
@@ -113,6 +115,8 @@ protected:
 	virtual void BeginPlay();
 
 	void TraceForward(FHitResult& Hit, float dist);
+
+	AActor* SpawnPointLight(const FVector& Location, float Intensity, FLinearColor LightColor);
 
 public:
 	/** Returns FollowCamera subobject **/
