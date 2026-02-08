@@ -15,6 +15,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class UPointLightComponent;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -108,15 +109,19 @@ protected:
 
 	TObjectPtr<class ASquadPlayerController> SquadPlayerController;
 
+	UPROPERTY()
+	TObjectPtr<UPointLightComponent> OrderingLight;
+
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+
 	// To add mapping context
 	virtual void BeginPlay();
+	virtual void Tick(float DeltaTime) override;
 
-	void TraceForward(FHitResult& Hit, float dist);
+	void TraceForward(FHitResult& Hit, const float dist, const bool debug);
 
-	AActor* SpawnPointLight(const FVector& Location, float Intensity, FLinearColor LightColor);
+	void UpdateOrderingLight();
 
 public:
 	/** Returns FollowCamera subobject **/

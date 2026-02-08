@@ -13,9 +13,7 @@
 #include "../weapon/Gun.h"
 #include "SquadPlayerController.h"
 #include "AICharacter.h"
-#include "Engine/PointLight.h"
 #include "Components/PointLightComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -24,6 +22,7 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 ASquadCharacter::ASquadCharacter() : bOrdering(false), bClicked(false), bMemberSelected(false), _memberIdx(-1)
 {
+	PrimaryActorTick.bCanEverTick = true;
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -33,8 +32,16 @@ ASquadCharacter::ASquadCharacter() : bOrdering(false), bClicked(false), bMemberS
 	}
 	//FollowCamera->SetupAttachment(RootComponent);
 	FollowCamera->bUsePawnControlRotation = true; // Camera does not rotate relative to arm
-	
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
+
+	// Create ordering light component (hidden by default)
+	OrderingLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("OrderingLight"));
+	OrderingLight->SetupAttachment(RootComponent);
+	OrderingLight->SetIntensity(1000.0f);
+	OrderingLight->SetLightColor(FLinearColor(0.0f, 0.0f, 0.4f));
+	OrderingLight->SetVisibility(false);
+	OrderingLight->SetMobility(EComponentMobility::Movable);
+
+	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character)
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
@@ -54,6 +61,32 @@ void ASquadCharacter::BeginPlay()
 	SquadPlayerController = Cast<ASquadPlayerController>(GetController());
 	SquadPlayerController->Owner = this;
 	SquadPlayerController->InitSquad();
+}
+
+void ASquadCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bOrdering)
+	{
+		UpdateOrderingLight();
+	}
+}
+
+void ASquadCharacter::UpdateOrderingLight()
+{
+	FHitResult Hit;
+	TraceForward(Hit, 2000.0f, false);
+
+	if (Hit.bBlockingHit == false)
+	{
+		OrderingLight->SetVisibility(false);
+		return;
+	}
+
+	FVector LightLocation = Hit.Location + Hit.ImpactNormal * 10.0f;
+	OrderingLight->SetWorldLocation(LightLocation);
+	OrderingLight->SetVisibility(true);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -136,20 +169,23 @@ void ASquadCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void ASquadCharacter::TraceForward(FHitResult& Hit, float dist) {
+void ASquadCharacter::TraceForward(FHitResult& Hit, const float dist, const bool debug) {
 	FVector TraceStart = FollowCamera->GetComponentLocation();
 	FVector TraceEnd = TraceStart + FollowCamera->GetForwardVector() * dist;
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
 	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Pawn, QueryParams);
 
-	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 3.0f);
-	UE_LOG(LogTemp, Log, TEXT("Tracing line: %s to %s"), *TraceStart.ToCompactString(), *TraceEnd.ToCompactString());
+	if (debug)
+	{
+		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 3.0f);
+		UE_LOG(LogTemp, Log, TEXT("Tracing line: %s to %s"), *TraceStart.ToCompactString(), *TraceEnd.ToCompactString());
+	}
 }
 
 void ASquadCharacter::Interact() {
 	FHitResult Hit;
-	TraceForward(Hit, 200.0f);
+	TraceForward(Hit, 200.0f, true);
 	IInteract* interactTarget = Cast<IInteract>(Hit.GetActor());
 	if (interactTarget == nullptr) return;
 	interactTarget->Interact(this);
@@ -167,24 +203,20 @@ void ASquadCharacter::TriggerUseWeapon() {
 void ASquadCharacter::Order() {
 	if (bOrdering) {
 		bOrdering = false;
+		OrderingLight->SetVisibility(false);
 		SquadPlayerController->MakeOrderUI(false);
 		SquadPlayerController->CrosshairOnOff(false);
 		return;
 	}
-	FHitResult Hit;
-	TraceForward(Hit, 2000.0f);
-	
-	FVector location = Hit.Location - GetActorLocation();
-	location.Normalize();
-	//SpawnPointLight(Hit.Location + (location * 10.0f), 5000.f, FLinearColor::Blue);
-	SquadPlayerController->MakeOrderUI(true);
-	SquadPlayerController->CrosshairOnOff(true);
+
 	bOrdering = true;
 	_memberIdx = -1;
+	SquadPlayerController->MakeOrderUI(true);
+	SquadPlayerController->CrosshairOnOff(true);
 }
 
 void ASquadCharacter::OrderNum(int num) {
-	if (!bOrdering) 
+	if (!bOrdering)
 		return;
 
 	if (_memberIdx < 0) {
@@ -217,15 +249,16 @@ void ASquadCharacter::SelectOrder(int orderIdx) {
 	case 2: { FreeWillOrder(); break; }
 	}
 	_memberIdx = -1;
+	bOrdering = false;
+	OrderingLight->SetVisibility(false);
 	SquadPlayerController->MakeOrderUI(false);
 	SquadPlayerController->OrderListOnOff(false);
 	SquadPlayerController->CrosshairOnOff(false);
-	bOrdering = false;
 }
 
 void ASquadCharacter::DesignateTarget() {
 	FHitResult Hit;
-	TraceForward(Hit, 2000.0f);
+	TraceForward(Hit, 2000.0f, true);
 	SquadPlayerController->SetMemberTarget(Hit.GetActor(), _memberIdx);
 }
 
@@ -235,47 +268,4 @@ void ASquadCharacter::FollowOrder() {
 
 void ASquadCharacter::FreeWillOrder() {
 	SquadPlayerController->SetMemberFreeWill(_memberIdx);
-}
-
-AActor* ASquadCharacter::SpawnPointLight(const FVector& Location, float Intensity, FLinearColor LightColor)
-{
-	UWorld* World = GetWorld();
-	if ( World == nullptr )
-		return nullptr;
-
-	FTransform Transform;
-	Transform.SetLocation(Location);
-	Transform.SetRotation(FQuat::Identity);
-
-	bool checkBool = IsInGameThread();
-
-	UPointLightComponent* LightComp = NewObject<UPointLightComponent>(this);
-	LightComp->RegisterComponentWithWorld(GetWorld());
-	LightComp->SetIntensity(5000.0f);
-	LightComp->SetLightColor(FLinearColor::White);
-	LightComp->SetWorldLocation(Location);
-	LightComp->SetMobility(EComponentMobility::Movable);
-	LightComp->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
-	/*
-	APointLight* NewLightActor = World->SpawnActorDeferred<APointLight>(APointLight::StaticClass(), Transform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (NewLightActor == nullptr )
-		return nullptr;
-
-	if (NewLightActor)
-	{
-		UPointLightComponent* LightComp = NewLightActor->FindComponentByClass<UPointLightComponent>();
-		if (LightComp)
-		{
-			LightComp->SetIntensity(Intensity);
-			LightComp->SetLightColor(LightColor);
-			LightComp->SetMobility(EComponentMobility::Movable);
-			LightComp->SetAttenuationRadius(1000.0f);
-		}
-
-		UGameplayStatics::FinishSpawningActor(NewLightActor, Transform);
-	}*/
-
-
-
-	return nullptr;
 }
