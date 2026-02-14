@@ -111,6 +111,22 @@ void ASquadPlayerController::SetMemberFollow(int memberIdx) {
 	memberAiController->FollowSquadLeader(FVector( -forwardDistance, 0, 0  ) );
 }
 
+void ASquadPlayerController::SetMemberMoveToPosition(FVector Position, int memberIdx) {
+	if (SquadMembers.Num() < memberIdx)
+		return;
+
+	if (SquadMembers.Num() == memberIdx) {
+		for (TObjectPtr<class AAICharacter> member : SquadMembers) {
+			ASquadAIController* memberAiController = Cast<ASquadAIController>(member->GetController());
+			memberAiController->MoveToPosition(Position);
+		}
+		return;
+	}
+
+	ASquadAIController* memberAiController = Cast<ASquadAIController>(SquadMembers[memberIdx]->GetController());
+	memberAiController->MoveToPosition(Position);
+}
+
 void ASquadPlayerController::SetMemberFreeWill(int memberIdx) {
 	if (SquadMembers.Num() < memberIdx) return;
 

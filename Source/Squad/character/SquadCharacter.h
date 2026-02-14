@@ -71,6 +71,12 @@ class ASquadCharacter : public ABaseCharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* NumPressedAction3;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* NumPressedAction4;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* NumPressedAction5;
+
 
 public:
 	ASquadCharacter();
@@ -97,12 +103,15 @@ protected:
 	void NumPressed1();
 	void NumPressed2();
 	void NumPressed3();
+	void NumPressed4();
+	void NumPressed5();
 
 	void SelectMember(int memberIdx);
 	void SelectOrder(int orderIdx);
 
 	void DesignateTarget();
 	void FollowOrder();
+	void MoveToPositionOrder();
 	void FreeWillOrder();
 
 	int _memberIdx;

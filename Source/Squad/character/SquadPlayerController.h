@@ -31,6 +31,7 @@ public:
 
 	void SetMemberTarget(TObjectPtr<AActor> target, int memberIdx);
 	void SetMemberFollow(int memberIdx);
+	void SetMemberMoveToPosition(FVector Position, int memberIdx);
 	void SetMemberFreeWill(int memberIdx);
 protected:
 	virtual void BeginPlay();

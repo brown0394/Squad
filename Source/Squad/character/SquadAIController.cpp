@@ -29,6 +29,7 @@ void ASquadAIController::OnPossess(APawn* InPawn) {
     Blackboard->SetValue<UBlackboardKeyType_Object>(FollowTargetKeyID, nullptr);
     FormationOffsetKeyID = Blackboard->GetKeyID("FormationOffset");
     PointOfInterestKeyID = Blackboard->GetKeyID("PointOfInterest");
+    IsOrderedMoveToPositionKeyID = Blackboard->GetKeyID("IsOrderedMoveToPosition");
 
 	BehaviorTreeComp->StartTree(*BehaviorTree);
 
@@ -197,10 +198,21 @@ void ASquadAIController::FollowSquadLeader(FVector FormationOffset) {
     Blackboard->SetValue<UBlackboardKeyType_Vector>(FormationOffsetKeyID, FormationOffset);
 }
 
+void ASquadAIController::MoveToPosition(FVector Position) {
+	bFollowingLeader = false;
+	bTargetDesignated = false;
+
+	Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
+	Blackboard->SetValue<UBlackboardKeyType_Object>(FollowTargetKeyID, nullptr);
+	Blackboard->SetValue<UBlackboardKeyType_Vector>(PointOfInterestKeyID, Position);
+    Blackboard->SetValue<UBlackboardKeyType_Bool>(IsOrderedMoveToPositionKeyID, true);
+}
+
 void ASquadAIController::FreeWill() {
     bFollowingLeader = false;
     bTargetDesignated = false;
 
     Blackboard->SetValue<UBlackboardKeyType_Object>(FollowTargetKeyID, nullptr);
     Blackboard->SetValue<UBlackboardKeyType_Object>(TargetKeyID, nullptr);
+    Blackboard->SetValue<UBlackboardKeyType_Bool>(IsOrderedMoveToPositionKeyID, false);
 }

@@ -28,6 +28,7 @@ public:
 	FBlackboard::FKey FollowTargetKeyID;
 	FBlackboard::FKey FormationOffsetKeyID;
 	FBlackboard::FKey PointOfInterestKeyID;
+	FBlackboard::FKey IsOrderedMoveToPositionKeyID;
 	void Stop();
 
 	FGenericTeamId TeamId;
@@ -39,6 +40,7 @@ public:
 
 	void DesignateTarget(TObjectPtr<AActor> Target);
 	void FollowSquadLeader(FVector FormationOffset);
+	void MoveToPosition(FVector Position);
 	void FreeWill();
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

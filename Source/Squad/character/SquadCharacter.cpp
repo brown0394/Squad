@@ -126,6 +126,8 @@ void ASquadCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(NumPressedAction1, ETriggerEvent::Triggered, this, &ASquadCharacter::NumPressed1);
 		EnhancedInputComponent->BindAction(NumPressedAction2, ETriggerEvent::Triggered, this, &ASquadCharacter::NumPressed2);
 		EnhancedInputComponent->BindAction(NumPressedAction3, ETriggerEvent::Triggered, this, &ASquadCharacter::NumPressed3);
+		EnhancedInputComponent->BindAction(NumPressedAction4, ETriggerEvent::Triggered, this, &ASquadCharacter::NumPressed4);
+		EnhancedInputComponent->BindAction(NumPressedAction5, ETriggerEvent::Triggered, this, &ASquadCharacter::NumPressed5);
 	}
 	else
 	{
@@ -235,6 +237,12 @@ void ASquadCharacter::NumPressed2() {
 void ASquadCharacter::NumPressed3() {
 	OrderNum(2);
 }
+void ASquadCharacter::NumPressed4() {
+	OrderNum(3);
+}
+void ASquadCharacter::NumPressed5() {
+	OrderNum(4);
+}
 
 void ASquadCharacter::SelectMember(int memberIdx) {
 	_memberIdx = memberIdx;
@@ -246,7 +254,8 @@ void ASquadCharacter::SelectOrder(int orderIdx) {
 	switch (orderIdx) {
 	case 0: { DesignateTarget(); break; }
 	case 1: { FollowOrder(); break; }
-	case 2: { FreeWillOrder(); break; }
+	case 2: { MoveToPositionOrder(); break; }
+	case 4: { FreeWillOrder(); break; }
 	}
 	_memberIdx = -1;
 	bOrdering = false;
@@ -264,6 +273,13 @@ void ASquadCharacter::DesignateTarget() {
 
 void ASquadCharacter::FollowOrder() {
 	SquadPlayerController->SetMemberFollow(_memberIdx);
+}
+
+void ASquadCharacter::MoveToPositionOrder() {
+	FHitResult Hit;
+	TraceForward(Hit, 2000.0f, true);
+	if (Hit.bBlockingHit)
+		SquadPlayerController->SetMemberMoveToPosition(Hit.Location, _memberIdx);
 }
 
 void ASquadCharacter::FreeWillOrder() {
