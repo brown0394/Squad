@@ -5,10 +5,19 @@
 #include "../interface/UseGun.h"
 #include "AIController.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 EBTNodeResult::Type UBTT_StopAiming::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) {
-	IUseGun* UseGun = Cast<IUseGun>(OwnerComp.GetAIOwner()->GetCharacter());
+	TObjectPtr<ACharacter> character = Cast<ACharacter>(OwnerComp.GetAIOwner()->GetCharacter());
+	if (character == nullptr) return EBTNodeResult::Failed;
+
+	IUseGun* UseGun = Cast<IUseGun>(character);
 	if (UseGun == nullptr) return EBTNodeResult::Failed;
+
+	OwnerComp.GetAIOwner()->ClearFocus(EAIFocusPriority::Gameplay);
+	character->GetCharacterMovement()->bOrientRotationToMovement = true;
+	character->GetCharacterMovement()->bUseControllerDesiredRotation = false;
+
 	UseGun->StopAiming();
 	return EBTNodeResult::Succeeded;
 }
