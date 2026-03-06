@@ -58,6 +58,18 @@ ECaliberType AGun::GetBulletType() {
 	return btype;
 }
 
+float AGun::GetRecoilPitch() const {
+	return RecoilPitch;
+}
+
+float AGun::GetRecoilYaw() const {
+	return RecoilYaw;
+}
+
+float AGun::GetRecoilSpeed() const {
+	return RecoilSpeed;
+}
+
 void AGun::Interact(TObjectPtr<ABaseCharacter> TargetCharacter) {
 	if (isAttached) return;
 	TObjectPtr<AGun> CurGun = TargetCharacter->GetCurGun();

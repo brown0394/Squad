@@ -8,7 +8,7 @@
 #include "HealthComponent.h"
 
 // Sets default values
-ABaseCharacter::ABaseCharacter() : IsAiming(false), IsAttacking(false), IsReloading(false)
+ABaseCharacter::ABaseCharacter() : IsAiming(false), IsAttacking(false), IsReloading(false), RecoilToApply(FRotator::ZeroRotator)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -53,6 +53,16 @@ void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!RecoilToApply.IsNearlyZero(0.01f)) {
+		float recoilSpeed = (CurGun != nullptr) ? CurGun->GetRecoilSpeed() : 10.f;
+		FRotator step = FMath::RInterpTo(FRotator::ZeroRotator, RecoilToApply, DeltaTime, recoilSpeed);
+		RecoilToApply -= step;
+
+		TObjectPtr<AController> CharController = GetController();
+		if (CharController != nullptr) {
+			CharController->SetControlRotation(CharController->GetControlRotation() + step);
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -84,6 +94,8 @@ bool ABaseCharacter::UseWeapon() {
 		IsAttacking = true;
 		OnAttackingStateChange.Broadcast();
 		MakeNoise(1.0f, this, GetActorLocation());
+
+		RecoilToApply += FRotator(CurGun->GetRecoilPitch(), FMath::RandRange(-CurGun->GetRecoilYaw(), CurGun->GetRecoilYaw()), 0.f);
 	}
 	return true;
 }

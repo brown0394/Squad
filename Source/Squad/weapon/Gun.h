@@ -33,6 +33,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gun)
 	ECaliberType btype;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Recoil)
+	float RecoilPitch;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Recoil)
+	float RecoilYaw;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Recoil)
+	float RecoilSpeed;
+
 	virtual void BeginPlay() override;
 public:
 	AGun();
@@ -41,7 +50,9 @@ public:
 	int GetBulletsLeft();
 	void SetBulletsLeft(int bullets);
 	ECaliberType GetBulletType();
+	float GetRecoilPitch() const;
+	float GetRecoilYaw() const;
+	float GetRecoilSpeed() const;
 private:
-	//bool bMalFunction;
 	int curBulletsLeft;
 };

@@ -79,6 +79,8 @@ protected:
 	bool IsAttacking;
 	bool IsReloading;
 
+	FRotator RecoilToApply;
+
 	TObjectPtr<class AGun> CurGun;
 
 	TObjectPtr<class UHealthComponent> HealthComp;
