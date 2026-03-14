@@ -8,3 +8,4 @@ void IUseGun::Aim() { return; }
 bool IUseGun::UseWeapon() { return false; }
 void IUseGun::Reload() { return; }
 void IUseGun::StopAiming() { return; }
+float IUseGun::GetFireRate() { return 0.f; }

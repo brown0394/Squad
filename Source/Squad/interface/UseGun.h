@@ -26,4 +26,5 @@ public:
 	virtual bool UseWeapon();
 	virtual void Reload();
 	virtual void StopAiming();
+	virtual float GetFireRate();
 };

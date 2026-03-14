@@ -37,6 +37,11 @@ bool AWeapon::IsReadyToAttack() {
 	return timeSinceLastAttack >= attackRate;
 }
 
+float AWeapon::GetAttackRate()
+{
+	return attackRate;
+}
+
 void AWeapon::Interact(TObjectPtr<class ABaseCharacter> TargetCharacter) {
 	if (isAttached) return;
 	AttachWeapon(TargetCharacter);

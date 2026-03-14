@@ -20,6 +20,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	bool IsReadyToAttack();
 	virtual void Interact(TObjectPtr<class ABaseCharacter> TargetCharacter) override;
+	float GetAttackRate();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> SM;

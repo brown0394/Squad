@@ -30,6 +30,8 @@ void ASquadAIController::OnPossess(APawn* InPawn) {
     FormationOffsetKeyID = Blackboard->GetKeyID("FormationOffset");
     PointOfInterestKeyID = Blackboard->GetKeyID("PointOfInterest");
     IsOrderedMoveToPositionKeyID = Blackboard->GetKeyID("IsOrderedMoveToPosition");
+    ShotsToFireKeyID = Blackboard->GetKeyID("ShotsToFire");
+    WeaponCoolDownID = Blackboard->GetKeyID("WeaponCoolDown");
 
 	BehaviorTreeComp->StartTree(*BehaviorTree);
 

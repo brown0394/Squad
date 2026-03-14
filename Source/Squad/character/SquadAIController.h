@@ -29,6 +29,8 @@ public:
 	FBlackboard::FKey FormationOffsetKeyID;
 	FBlackboard::FKey PointOfInterestKeyID;
 	FBlackboard::FKey IsOrderedMoveToPositionKeyID;
+	FBlackboard::FKey ShotsToFireKeyID;
+	FBlackboard::FKey WeaponCoolDownID;
 	void Stop();
 
 	FGenericTeamId TeamId;

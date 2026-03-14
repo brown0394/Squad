@@ -128,7 +128,17 @@ void ABaseCharacter::StopAttacking() {
 
 void ABaseCharacter::ReloadingDone() {
 	IsReloading = false;
+	if (CurGun == nullptr)
+		return;
+
 	CurGun->SetBulletsLeft(Magazines[CurGun->GetBulletType()].innerArray.Pop());
+}
+
+float ABaseCharacter::GetFireRate()
+{
+	if (CurGun == nullptr ) return 0.f;
+
+	return CurGun->GetAttackRate();
 }
 
 TObjectPtr<AGun> ABaseCharacter::GetCurGun() { return CurGun; };

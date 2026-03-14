@@ -74,6 +74,7 @@ protected:
 	virtual bool UseWeapon() override;
 
 	virtual void Reload() override;
+	virtual float GetFireRate() override;
 
 	bool IsAiming;
 	bool IsAttacking;
