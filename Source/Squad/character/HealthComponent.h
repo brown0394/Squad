@@ -22,8 +22,9 @@ protected:
 	virtual void BeginPlay() override;
 	float hp;
 
-public:	
+public:
 	FOnDeathSignature OnDeath;
+	bool IsDead() const { return hp <= 0; }
 	
 	UFUNCTION()
 	void OnOwnerTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy,

@@ -106,6 +106,10 @@ void ASquadAIController::PerceptionUpdated(AActor* UpdatedActor, FAIStimulus sti
 
 void ASquadAIController::OnStimulusSight( const TObjectPtr<AActor> curTarget, AActor* UpdatedActor )
 {
+    TObjectPtr<ABaseCharacter> UpdatedCharacter = Cast<ABaseCharacter>(UpdatedActor);
+    if (UpdatedCharacter != nullptr && UpdatedCharacter->GetHealthComponent()->IsDead())
+        return;
+
     TObjectPtr<AActor> target = curTarget;
     if ( target == nullptr )
         target = UpdatedActor;
