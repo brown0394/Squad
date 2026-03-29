@@ -119,7 +119,11 @@ void ASquadCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 		// Reloading
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Reload);
-		
+
+		// Sprinting
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ASquadCharacter::StartSprint);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ASquadCharacter::EndSprint);
+
 		// Ordering
 		EnhancedInputComponent->BindAction(OrderAction, ETriggerEvent::Triggered, this, &ASquadCharacter::Order);
 
@@ -200,6 +204,14 @@ void ASquadCharacter::Interact() {
 void ASquadCharacter::TriggerUseWeapon() {
 	if (bOrdering) return;
 	UseWeapon();
+}
+
+void ASquadCharacter::StartSprint() {
+	Sprint();
+}
+
+void ASquadCharacter::EndSprint() {
+	StopSprinting();
 }
 
 void ASquadCharacter::Order() {

@@ -8,7 +8,7 @@
 #include "HealthComponent.h"
 
 // Sets default values
-ABaseCharacter::ABaseCharacter() : IsAiming(false), IsAttacking(false), IsReloading(false), RecoilToApply(FRotator::ZeroRotator)
+ABaseCharacter::ABaseCharacter() : IsAiming(false), IsAttacking(false), IsReloading(false), IsSprinting(false), RecoilToApply(FRotator::ZeroRotator)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -45,6 +45,7 @@ void ABaseCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 	OnAimingStateChange.Clear();
 	OnAttackingStateChange.Clear();
 	OnReloadStateChange.Clear();
+	OnSprintStateChange.Clear();
 	HealthComp->DestroyComponent();
 }
 
@@ -74,8 +75,11 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void ABaseCharacter::Aim() {
 	if (!IsAiming) {
+		if (IsSprinting) {
+			StopSprinting();
+		}
 		IsAiming = true;
-		GetCharacterMovement()->MaxWalkSpeed = 250.f;
+		GetCharacterMovement()->MaxWalkSpeed = AimSpeed;
 		OnAimingStateChange.Broadcast();
 	}
 }
@@ -83,9 +87,30 @@ void ABaseCharacter::Aim() {
 void ABaseCharacter::StopAiming() {
 	if (IsAiming) {
 		IsAiming = false;
-		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 		OnAimingStateChange.Broadcast();
 	}
+}
+
+void ABaseCharacter::Sprint() {
+	if (IsAiming) return;
+	if (!IsSprinting) {
+		IsSprinting = true;
+		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		OnSprintStateChange.Broadcast();
+	}
+}
+
+void ABaseCharacter::StopSprinting() {
+	if (IsSprinting) {
+		IsSprinting = false;
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+		OnSprintStateChange.Broadcast();
+	}
+}
+
+bool ABaseCharacter::GetIsSprinting() {
+	return IsSprinting;
 }
 
 bool ABaseCharacter::UseWeapon() {

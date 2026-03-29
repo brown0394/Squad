@@ -38,6 +38,9 @@ class SQUAD_API ABaseCharacter : public ACharacter, public IUseGun, public IGene
 	UFUNCTION(BlueprintCallable)
 	void ReloadingDone();
 
+	UFUNCTION(BlueprintCallable)
+	bool GetIsSprinting();
+
 public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
@@ -49,6 +52,8 @@ public:
 	FOnStateChangeSignature OnAttackingStateChange;
 	UPROPERTY(BlueprintAssignable, Category = "Character State")
 	FOnStateChangeSignature OnReloadStateChange;
+	UPROPERTY(BlueprintAssignable, Category = "Character State")
+	FOnStateChangeSignature OnSprintStateChange;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Team")
 	FGenericTeamId TeamId;
@@ -70,15 +75,29 @@ protected:
 	virtual void Aim() override;
 	virtual void StopAiming() override;
 
+	/** Called for sprint input */
+	virtual void Sprint();
+	virtual void StopSprinting();
+
 	/** Called for use weapon input */
 	virtual bool UseWeapon() override;
 
 	virtual void Reload() override;
 	virtual float GetFireRate() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Speed")
+	float WalkSpeed = 500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Speed")
+	float SprintSpeed = 750.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Speed")
+	float AimSpeed = 250.f;
+
 	bool IsAiming;
 	bool IsAttacking;
 	bool IsReloading;
+	bool IsSprinting;
 
 	FRotator RecoilToApply;
 

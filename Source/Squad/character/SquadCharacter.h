@@ -60,6 +60,9 @@ class ASquadCharacter : public ABaseCharacter
 	UInputAction* ReloadAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* SprintAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* OrderAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -93,6 +96,9 @@ protected:
 	void Interact();
 
 	void TriggerUseWeapon();
+
+	void StartSprint();
+	void EndSprint();
 
 	void Order();
 	void OrderNum(int num);
